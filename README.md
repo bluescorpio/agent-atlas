@@ -37,7 +37,15 @@ The prototype is designed for five clicks or fewer. The current wallet and payme
 
 ## Screenshots
 
-Screenshots will be added under [`docs/screenshots/`](./docs/screenshots/) after the next visual QA pass. Until then, the local demo is the canonical preview.
+Screenshots will be stored under [`docs/screenshots/`](./docs/screenshots/) after the next visual QA pass. Until then, the local demo is the canonical preview.
+
+| Rebalancing | Grid Trading |
+| --- | --- |
+| _Screenshot pending_ | _Screenshot pending_ |
+
+| Yield Optimisation | Health Factor |
+| --- | --- |
+| _Screenshot pending_ | _Screenshot pending_ |
 
 ## Data sources
 
@@ -66,6 +74,13 @@ The eight entries below are fixed demo listings, not deployed production agents.
 | HF Sentinel | Health Factor | Lista Lending | `hf-sentinel` |
 
 Agent Studio deployment slots are reserved under [`agents/`](./agents/). Real agent IDs, wallets, endpoints, and BscScan links will be added only after deployment.
+
+| Deployment slot | Category | Protocol | Status |
+| --- | --- | --- | --- |
+| `grid-bnb-usdt` | Grid Trading | PancakeSwap | Planned |
+| `hf-guard-venus` | Health Factor Monitoring | Venus | Planned |
+| `yield-stable-router` | Yield Optimisation | Venus / Lista | Planned |
+| `rebalancing-pcs-v3` | Rebalancing | PancakeSwap v3 | Planned |
 
 ## Run locally
 
