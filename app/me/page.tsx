@@ -1,0 +1,2 @@
+import Link from 'next/link';
+export default function MePage(){ return <main className="route-page"><header className="route-head"><Link href="/">← Agent Atlas</Link><span>MY AGENTS</span></header><div className="route-content"><div className="eyebrow muted">YOUR COMMAND CENTER</div><h1>My agents.</h1><div className="empty route-empty"><div>✦</div><p>No active agents in this wallet.</p><span>Activate one from the marketplace to see it here.</span><Link className="primary" href="/">Browse marketplace ↗</Link></div></div></main> }
