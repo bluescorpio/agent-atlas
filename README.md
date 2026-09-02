@@ -1,5 +1,7 @@
 # Agent Atlas
 
+**Status: Early prototype — onchain data and payment are mocked**
+
 **Find, compare and hire DeFi agents on BNB Smart Chain.**
 
 Agent Atlas is a marketplace prototype for ERC-8004 agents on BNB Smart Chain, built for the BNB Chain **Build the Era** hackathon (Main Track + TermiX Challenge). Users browse four equal categories, inspect the data behind each metric, compare agents, and activate one with a capital cap.
