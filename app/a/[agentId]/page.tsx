@@ -31,18 +31,31 @@ export default async function AgentPage({ params }: { params: Promise<{ agentId:
         <p>{agent.identity.description}</p>
         <section className="route-panel">
           <h3>ERC-8004 IDENTITY</h3>
-          <code>{agent.identity.agentId}</code>
+          {agent.source === 'live' ? (
+            <>
+              <code>ERC-8004 agent_id 2066</code>
+              <code>marketplace id {agent.identity.agentId}</code>
+              <code>{agent.identity.wallet}</code>
+              {agent.identity.endpoint && <code>{agent.identity.endpoint}</code>}
+              <p className="fine">
+                ERC-8004 VERIFIED means onchain identity registration. Reputation and performance figures below are Demo data until pulled from registries / tx history.
+              </p>
+            </>
+          ) : (
+            <code>demo://{agent.identity.agentId}</code>
+          )}
           <a href={`https://bscscan.com/address/${agent.identity.wallet}`} target="_blank" rel="noreferrer">
             Owner / wallet on BscScan ↗
           </a>
         </section>
         <section className="route-panel">
-          <h3>REPUTATION</h3>
+          <h3>REPUTATION · DEMO DATA</h3>
           <div className="route-metrics">
-            <span>{agent.reputation.feedbackCount.value} feedback</span>
-            <span>{agent.reputation.score.value.toFixed(1)} score</span>
-            <span>{agent.reputation.validations.value} validations</span>
+            <span title="Demo data — not from onchain history">{agent.reputation.feedbackCount.value} feedback</span>
+            <span title="Demo data — not from onchain history">{agent.reputation.score.value.toFixed(1)} score</span>
+            <span title="Demo data — not from onchain history">{agent.reputation.validations.value} validations</span>
           </div>
+          <p className="fine">Not claimed as live registry reads yet.</p>
         </section>
         <section className="route-panel">
           <h3>WHAT IT DOES</h3>

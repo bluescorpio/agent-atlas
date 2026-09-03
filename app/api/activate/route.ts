@@ -27,6 +27,22 @@ function asParams(body: {
   return params;
 }
 
+function nextStepFor(error: string): string {
+  if (error === 'DEMO_AGENT_NOT_ACTIVATABLE') {
+    return 'This listing is Demo — not deployed. Hire the live grid-bnb-usdt agent via ERC-8183 on /a/grid-bnb-usdt.';
+  }
+  if (error === 'WALLET_NOT_CONNECTED') {
+    return 'Connect a wallet, then retry. The address must match ERC8183_BUYER_PRIVATE_KEY on the server.';
+  }
+  if (error === 'WALLET_MISMATCH') {
+    return 'Connected wallet must equal the ERC8183_BUYER_PRIVATE_KEY address (BSC testnet buyer with ≥ 0.1 U + gas).';
+  }
+  if (error === 'ERC8183_BUYER_PRIVATE_KEY_REQUIRED' || error.startsWith('A2A_OAUTH')) {
+    return 'Set AGENT_CLIENT_ID / AGENT_CLIENT_SECRET and ERC8183_BUYER_PRIVATE_KEY on the server (.env.local), then retry.';
+  }
+  return 'Retry the live ERC-8183 path: negotiate → createJob → registerJob → setBudget → fund → notify_funded → poll SUBMITTED. x402/B402 is not enabled.';
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json() as {
@@ -46,7 +62,7 @@ export async function POST(request: Request) {
     const status = message === 'DEMO_AGENT_NOT_ACTIVATABLE' ? 409 : 400;
     return NextResponse.json({
       error: message,
-      nextStep: 'Connect the buyer wallet, set AGENT_CLIENT_ID / AGENT_CLIENT_SECRET and ERC8183_BUYER_PRIVATE_KEY, then retry. Flow is negotiate → ERC-8183 fund → notify_funded → poll SUBMITTED.',
+      nextStep: nextStepFor(message),
     }, { status });
   }
 }
