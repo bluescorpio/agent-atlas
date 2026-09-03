@@ -4,12 +4,16 @@ import { dirname, join } from 'node:path';
 import { afterEach, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { activateWithErc8183, _setErc8183ActivateDeps, type Erc8183BuyerClient } from './activate';
-import { ERC8183_COMMERCE, U_TOKEN } from './constants';
+import { a2aInvokeUrl, extractA2aDataPart } from './a2a';
+import { ERC8183_COMMERCE, GRID_A2A_INVOKE_URL, U_TOKEN } from './constants';
 import { extractNegotiationEnvelope, isQuoteExpired } from './envelope';
+import { pollUntilSubmitted } from './poll';
+import { buildTaskFromParams } from './task';
 import type { AgentListing } from '../types';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const BUYER = '0x1111111111111111111111111111111111111111';
+const DELIVERABLE = 'https://example.test/deliverable/grid-plan.json';
 
 function loadReportEnvelope() {
   const raw = readFileSync(
@@ -27,7 +31,7 @@ function agent(): AgentListing {
       wallet: '0x3573e861363880f18F357Ca8258FA1393573d676',
       name: 'Grid BNB / USDT',
       description: 'grid',
-      endpoint: 'https://bnbagent-api.bnbchain.world/v1/rt/example/.well-known/agent-card.json',
+      endpoint: 'https://bnbagent-api.bnbchain.world/v1/rt/01M1K4SSXB6VA50K5C6FV6E4JK/.well-known/agent-card.json',
       registeredAt: 0,
     },
     category: 'grid_trading',
@@ -48,6 +52,7 @@ function agent(): AgentListing {
 }
 
 function fakeClient(calls: string[]): Erc8183BuyerClient {
+  let status = 1;
   return {
     network: { commerceContract: ERC8183_COMMERCE },
     policy: { disputeWindow: async () => BigInt(86_400) },
@@ -69,6 +74,23 @@ function fakeClient(calls: string[]): Erc8183BuyerClient {
       calls.push('fund');
       return { transactionHash: '0xfund', receipt: { status: 1 } };
     },
+    getJobStatus: async () => {
+      calls.push('getJobStatus');
+      status = 2;
+      return status;
+    },
+    getDeliverableUrl: async () => {
+      calls.push('getDeliverableUrl');
+      return DELIVERABLE;
+    },
+  };
+}
+
+function passThroughNotify() {
+  return {
+    notifyFunded: async (_agent: AgentListing, jobId: bigint) => {
+      return { status: 'accepted', job_id: jobId.toString(), raw: { status: 'accepted', job_id: Number(jobId) } };
+    },
   };
 }
 
@@ -84,9 +106,40 @@ test('extracts negotiation_hash from the saved A2A report', () => {
   );
 });
 
-test('activateWithErc8183 runs createJob → registerJob → setBudget → fund', async () => {
+test('derives the /a2a invoke URL from an agent-card endpoint', () => {
+  assert.equal(
+    a2aInvokeUrl('https://bnbagent-api.bnbchain.world/v1/rt/01M1K4SSXB6VA50K5C6FV6E4JK/.well-known/agent-card.json'),
+    GRID_A2A_INVOKE_URL,
+  );
+  assert.equal(a2aInvokeUrl(GRID_A2A_INVOKE_URL), GRID_A2A_INVOKE_URL);
+});
+
+test('extractA2aDataPart reads a notify_funded data part', () => {
+  const data = extractA2aDataPart({
+    jsonrpc: '2.0',
+    result: {
+      kind: 'message',
+      parts: [{ kind: 'data', data: { status: 'accepted', job_id: 42 } }],
+    },
+  });
+  assert.equal(data.status, 'accepted');
+  assert.equal(data.job_id, 42);
+});
+
+test('buildTaskFromParams uses gridCount/lowerPrice/upperPrice/budgetCap', () => {
+  assert.equal(
+    buildTaskFromParams(
+      { gridCount: '10', lowerPrice: '500', upperPrice: '600', budgetCap: '0.1' },
+      'fallback',
+    ),
+    'Run a BNB/USDT grid with 10 levels between 500 and 600 USDT. Capital cap 0.1 U',
+  );
+});
+
+test('activateWithErc8183 runs createJob → registerJob → setBudget → fund → notify → poll', async () => {
   const envelope = loadReportEnvelope();
   const calls: string[] = [];
+  let notified: string | undefined;
   const result = await activateWithErc8183(
     agent(),
     { envelope: JSON.stringify(envelope), negotiation_hash: String(envelope.negotiation_hash) },
@@ -95,13 +148,53 @@ test('activateWithErc8183 runs createJob → registerJob → setBudget → fund'
       now: () => (Number((envelope.response as { quote_expires_at: number }).quote_expires_at) - 10) * 1000,
       createWallet: () => ({ address: BUYER }),
       createClient: async () => fakeClient(calls),
+      notifyFunded: async (_agent, jobId) => {
+        notified = jobId.toString();
+        return { status: 'accepted', job_id: jobId.toString(), raw: { status: 'accepted', job_id: Number(jobId) } };
+      },
+      pollDeliverable: async (client, jobId) => {
+        calls.push('poll');
+        assert.equal(jobId.toString(), '42');
+        return client.getDeliverableUrl(jobId) as Promise<string>;
+      },
     },
   );
-  assert.deepEqual(calls, ['createJob', 'registerJob', 'setBudget', 'fund']);
+  assert.deepEqual(calls, ['createJob', 'registerJob', 'setBudget', 'fund', 'poll', 'getDeliverableUrl']);
+  assert.equal(notified, '42');
   assert.equal(result.jobId, '42');
   assert.equal(result.txHash, '0xfund');
   assert.equal(result.taskId, 'erc8183:42');
+  assert.equal(result.deliverableUrl, DELIVERABLE);
   assert.equal(result.receipt.negotiationHash, envelope.negotiation_hash);
+});
+
+test('missing envelope always negotiates a fresh quote', async () => {
+  const envelope = loadReportEnvelope();
+  const fresh = structuredClone(envelope) as typeof envelope;
+  (fresh.response as { quote_expires_at: number }).quote_expires_at = 2_000_000_000;
+  let negotiated = 0;
+  const calls: string[] = [];
+  const result = await activateWithErc8183(
+    agent(),
+    { gridCount: '10', lowerPrice: '500', upperPrice: '600', budgetCap: '0.1' },
+    BUYER,
+    {
+      now: () => 1_700_000_000_000,
+      createWallet: () => ({ address: BUYER }),
+      createClient: async () => fakeClient(calls),
+      negotiate: async (listing, task) => {
+        negotiated += 1;
+        assert.equal(listing.identity.agentId, 'grid-bnb-usdt');
+        assert.match(task, /10 levels between 500 and 600/);
+        return fresh;
+      },
+      ...passThroughNotify(),
+      pollDeliverable: async () => DELIVERABLE,
+    },
+  );
+  assert.equal(negotiated, 1);
+  assert.equal(result.deliverableUrl, DELIVERABLE);
+  assert.deepEqual(calls, ['createJob', 'registerJob', 'setBudget', 'fund']);
 });
 
 test('expired quote_expires_at triggers a fresh negotiate before funding', async () => {
@@ -124,9 +217,24 @@ test('expired quote_expires_at triggers a fresh negotiate before funding', async
         negotiated += 1;
         return fresh;
       },
+      ...passThroughNotify(),
+      pollDeliverable: async () => DELIVERABLE,
     },
   );
   assert.equal(negotiated, 1);
   assert.equal(result.jobId, '42');
   assert.deepEqual(calls, ['createJob', 'registerJob', 'setBudget', 'fund']);
+});
+
+test('pollUntilSubmitted waits until SUBMITTED then reads deliverable_url', async () => {
+  const statuses = [1, 1, 2];
+  const url = await pollUntilSubmitted(
+    {
+      getJobStatus: async () => statuses.shift() ?? 2,
+      getDeliverableUrl: async () => DELIVERABLE,
+    },
+    BigInt(7),
+    { sleep: async () => undefined, intervalMs: 0, maxAttempts: 5 },
+  );
+  assert.equal(url, DELIVERABLE);
 });

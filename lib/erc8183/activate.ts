@@ -16,24 +16,29 @@ import {
 } from './constants';
 import {
   assertCanonicalQuote,
-  envelopeFromParams,
+  envelopeFromParamsOptional,
   isQuoteExpired,
   quotedPriceWei,
+  quoteExpiresAt,
   taskDescription,
   type NegotiationEnvelope,
 } from './envelope';
 import { renegotiateQuote } from './negotiate';
+import { notifyFunded, type NotifyFundedAck } from './notify';
+import { pollUntilSubmitted, type JobPollClient } from './poll';
+import { buildTaskFromParams } from './task';
 
 export type Erc8183ActivationResult = {
   taskId: string;
   jobId: string;
   txHash: `0x${string}`;
+  deliverableUrl: string;
   receipt: Record<string, unknown>;
 };
 
 type TxLike = { transactionHash?: string; txHash?: string; receipt?: unknown; jobId?: bigint | number | string | null };
 
-export type Erc8183BuyerClient = {
+export type Erc8183BuyerClient = JobPollClient & {
   network: { commerceContract: string };
   publicClient?: Parameters<typeof verifyQuoteSignature>[0]['publicClient'];
   policy: { disputeWindow(): Promise<bigint> };
@@ -50,6 +55,8 @@ export type Erc8183ActivateDeps = {
   createWallet?: () => { address: string; destroy?: () => void };
   createClient?: (wallet: { address: string }) => Promise<Erc8183BuyerClient>;
   negotiate?: (agent: AgentListing, task: string) => Promise<NegotiationEnvelope>;
+  notifyFunded?: (agent: AgentListing, jobId: bigint) => Promise<NotifyFundedAck>;
+  pollDeliverable?: (client: JobPollClient, jobId: bigint) => Promise<string>;
 };
 
 let injectedDeps: Erc8183ActivateDeps | null = null;
@@ -98,9 +105,31 @@ function deadlineMinutes(params: Record<string, string>): number {
   return Number.isFinite(value) && value > 0 ? value : DEFAULT_DEADLINE_MINUTES;
 }
 
+async function resolveQuote(
+  agent: AgentListing,
+  params: Record<string, string>,
+  task: string,
+  nowMs: () => number,
+  negotiate: (agent: AgentListing, task: string) => Promise<NegotiationEnvelope>,
+): Promise<NegotiationEnvelope> {
+  let envelope = envelopeFromParamsOptional(params);
+  const nowSec = () => Math.floor(nowMs() / 1000);
+  if (!envelope || isQuoteExpired(envelope, nowSec())) {
+    envelope = await negotiate(agent, task);
+    if (isQuoteExpired(envelope, nowSec())) {
+      throw new Error('QUOTE_EXPIRED');
+    }
+  }
+  assertCanonicalQuote(envelope);
+  return envelope;
+}
+
 /**
- * Buyer path: anchor an already-signed ERC-8183 quote on-chain.
- * createJob → registerJob → setBudget → fund.
+ * Real buyer path, no mocks:
+ * 1. A2A negotiate (data part) — refresh if quote_expires_at has passed (15 min TTL)
+ * 2. On-chain createJob → registerJob → setBudget → fund
+ * 3. A2A notify_funded with the real job_id
+ * 4. Poll chain until SUBMITTED and return deliverable_url
  */
 export async function activateWithErc8183(
   agent: AgentListing,
@@ -109,17 +138,11 @@ export async function activateWithErc8183(
   deps: Erc8183ActivateDeps = {},
 ): Promise<Erc8183ActivationResult> {
   const resolved = { ...injectedDeps, ...deps };
-  const nowSec = Math.floor((resolved.now?.() ?? Date.now()) / 1000);
-  let envelope = envelopeFromParams(params);
-  const task = params.task || taskDescription(envelope, `Activate ${agent.identity.name}`);
-  if (isQuoteExpired(envelope, nowSec)) {
-    const negotiate = resolved.negotiate ?? renegotiateQuote;
-    envelope = await negotiate(agent, task);
-    if (isQuoteExpired(envelope, Math.floor((resolved.now?.() ?? Date.now()) / 1000))) {
-      throw new Error('QUOTE_EXPIRED');
-    }
-  }
-  assertCanonicalQuote(envelope);
+  const nowMs = resolved.now ?? Date.now;
+  const negotiate = resolved.negotiate ?? renegotiateQuote;
+  const task = buildTaskFromParams(params, `Activate ${agent.identity.name}`);
+  const envelope = await resolveQuote(agent, params, task, nowMs, negotiate);
+  const nowSec = Math.floor(nowMs() / 1000);
 
   const buyer = resolved.createWallet?.() ?? buyerWallet();
   try {
@@ -172,23 +195,34 @@ export async function activateWithErc8183(
     const funded = await client.fund(jobId, rawBudget, { approveFloor: rawBudget });
     const fundTx = txHash(funded, 'fund');
 
+    const notify = resolved.notifyFunded ?? notifyFunded;
+    const ack = await notify(agent, jobId);
+
+    const poll = resolved.pollDeliverable ?? pollUntilSubmitted;
+    const deliverableUrl = await poll(client, jobId);
+
     return {
       taskId: `erc8183:${jobId.toString()}`,
       jobId: jobId.toString(),
       txHash: fundTx,
+      deliverableUrl,
       receipt: jsonSafe({
         chainId: ERC8183_CHAIN_ID,
         commerce: ERC8183_COMMERCE,
         token: U_TOKEN,
         negotiationHash: envelope.negotiation_hash,
+        quoteExpiresAt: quoteExpiresAt(envelope),
         provider: agent.identity.wallet,
         budgetWei: rawBudget.toString(),
         expiredAt: expiredAt.toString(),
+        task: taskDescription(envelope, task),
         createTx,
         registerTx,
         setBudgetTx,
         fundTx,
         fundReceipt: funded.receipt ?? null,
+        notify: ack.raw,
+        deliverableUrl,
       }),
     };
   } finally {

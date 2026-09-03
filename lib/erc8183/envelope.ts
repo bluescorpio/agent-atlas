@@ -58,6 +58,13 @@ export function envelopeFromParams(params: Record<string, string>): NegotiationE
   return envelope;
 }
 
+/** Same as envelopeFromParams, but returns null when the caller did not supply a quote. */
+export function envelopeFromParamsOptional(params: Record<string, string>): NegotiationEnvelope | null {
+  const raw = params.envelope ?? params.quote ?? params.negotiation ?? params.negotiation_json;
+  if (raw === undefined || raw === '') return null;
+  return envelopeFromParams(params);
+}
+
 function responseBlock(envelope: NegotiationEnvelope): Record<string, unknown> {
   return asRecord(envelope.response) ?? envelope;
 }

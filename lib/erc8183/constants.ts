@@ -13,3 +13,22 @@ export const ERC8183_POLICY = '0xd6a4217588f6b1f5657a92a3e94e6422ad771cea' as co
 export const ERC8183_NETWORK = 'bsc-testnet' as const;
 export const DEFAULT_DEADLINE_MINUTES = 30;
 export const U_DECIMALS = 18;
+
+/** Live grid-bnb-usdt runtime on bnbagent-api (BSC testnet). */
+export const GRID_RUNTIME_ID = '01M1K4SSXB6VA50K5C6FV6E4JK';
+export const GRID_A2A_INVOKE_URL =
+  `https://bnbagent-api.bnbchain.world/v1/rt/${GRID_RUNTIME_ID}/a2a` as const;
+export const BNBAGENT_OAUTH_TOKEN_URL = 'https://bnbagent-api.bnbchain.world/v1/oauth/token';
+
+/** Seller quotes expire 15 minutes after `negotiated_at`. */
+export const QUOTE_TTL_SECONDS = 15 * 60;
+
+export const JOB_STATUS_OPEN = 0;
+export const JOB_STATUS_FUNDED = 1;
+export const JOB_STATUS_SUBMITTED = 2;
+export const JOB_STATUS_COMPLETED = 3;
+export const JOB_STATUS_REJECTED = 4;
+export const JOB_STATUS_EXPIRED = 5;
+
+export const POLL_INTERVAL_MS = 5_000;
+export const POLL_MAX_ATTEMPTS = 48;

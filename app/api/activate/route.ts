@@ -3,7 +3,8 @@ import { activate } from '../../../lib/x402/activate';
 import { getMockAgent } from '../../../lib/chain/mock';
 
 export const runtime = 'nodejs';
-export const maxDuration = 60;
+/** Negotiate + 4 chain writes + seller LLM submit can exceed 60s. */
+export const maxDuration = 300;
 
 function asParams(body: {
   params?: Record<string, unknown>;
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
     const status = message === 'DEMO_AGENT_NOT_ACTIVATABLE' ? 409 : 400;
     return NextResponse.json({
       error: message,
-      nextStep: 'Use a live listing, a still-valid ERC-8183 negotiation envelope, and ERC8183_BUYER_PRIVATE_KEY on BSC testnet.',
+      nextStep: 'Connect the buyer wallet, set AGENT_CLIENT_ID / AGENT_CLIENT_SECRET and ERC8183_BUYER_PRIVATE_KEY, then retry. Flow is negotiate → ERC-8183 fund → notify_funded → poll SUBMITTED.',
     }, { status });
   }
 }

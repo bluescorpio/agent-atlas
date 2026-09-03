@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test:erc8183": "npx --yes tsx --test lib/erc8183/activate.test.ts"
+    "test:erc8183": "npx --yes tsx --test lib/erc8183/*.test.ts"
   },
   "dependencies": {
     "@bnbagent/sdk": "0.5.5",

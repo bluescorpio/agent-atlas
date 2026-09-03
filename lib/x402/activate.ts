@@ -19,8 +19,8 @@ export async function activateWithX402(
 }
 
 /**
- * Server-side activation. ERC-8183 is the live payment rail; x402 stays
- * callable via {@link activateWithX402} once B402 credentials land.
+ * Live hire path: ERC-8183 negotiate → fund → notify_funded → poll SUBMITTED.
+ * x402 stays callable via {@link activateWithX402} once B402 credentials land.
  */
 export async function activate(
   agent: AgentListing,
