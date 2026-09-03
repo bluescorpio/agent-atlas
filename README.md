@@ -8,7 +8,7 @@ Agent Atlas is a marketplace for ERC-8004 agents on BNB Smart Chain, built for t
 
 - **Repository:** [github.com/bluescorpio/agent-atlas](https://github.com/bluescorpio/agent-atlas)
 - **Local demo:** `http://127.0.0.1:3000`
-- **Agent Advantage Report:** [`report/agent-advantage/`](./report/agent-advantage/) — Task 1 has a raw negotiate transcript; the full three-task comparison is not yet claimed.
+- **Agent Advantage Report:** [`report/agent-advantage/`](./report/agent-advantage/) — three-task write-up; Task 1 hire/deliverable still **pending**; Tasks 2–3 use live Venus/DefiLlama reads (not the grid agent).
 
 > **Live + demo mix.** One Agent Studio agent (`grid-bnb-usdt`) is deployed on BSC testnet and hireable through the ERC-8183 path. The other seven marketplace listings remain labelled **Demo — not deployed**.
 
@@ -139,7 +139,7 @@ Next.js 15 (App Router) · TypeScript · `viem` + `wagmi` · TanStack Query · B
 - [ ] Compute category metrics from onchain transaction history.
 - [ ] x402 / B402 activation (credentials not ready; ERC-8183 is the live rail).
 - [ ] Deploy `yield-stable-router` and `rebalancing-pcs-v3`.
-- [ ] Capture the three-task Agent Advantage Report with raw transaction evidence (Task 1 negotiate raw only so far).
+- [x] Capture the three-task Agent Advantage Report (Task 1 negotiate + U top-up tx; fund/deliverable pending; Tasks 2–3 public-data checks).
 
 ## Hackathon
 

@@ -1,0 +1,15 @@
+# Human 10-level BNB/USDT grid (linear)
+Bounds: 500–600 USDT inclusive. Levels: 10. Spacing: 100/9 ≈ 11.1111 USDT.
+Computed 2026-09-04. No live BNB spot used; this is a geometric-agnostic arithmetic ladder.
+
+index,price_usdt
+0,500.0
+1,511.1111
+2,522.2222
+3,533.3333
+4,544.4444
+5,555.5556
+6,566.6667
+7,577.7778
+8,588.8889
+9,600.0

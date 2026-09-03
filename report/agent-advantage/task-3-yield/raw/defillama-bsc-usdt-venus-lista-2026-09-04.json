@@ -1,0 +1,76 @@
+{
+  "fetched_at": "2026-09-03T22:40:39.616899+00:00",
+  "filter": "chain=BSC symbol contains USDT project venus|lista",
+  "pools": [
+    {
+      "project": "venus-core-pool",
+      "symbol": "USDT",
+      "apy": 3.04566,
+      "apyBase": 3.04566,
+      "apyReward": 0,
+      "tvlUsd": 52861396,
+      "pool": "9f3a6015-5045-4471-ba65-ad3dc7c38269",
+      "source": "https://yields.llama.fi/pools"
+    },
+    {
+      "project": "lista-lending",
+      "symbol": "USDT",
+      "apy": 1.52796,
+      "apyBase": 1.52796,
+      "apyReward": 0,
+      "tvlUsd": 2913552,
+      "pool": "3b24b57f-0be8-4e4a-a6d6-a69d3cbd87fc",
+      "source": "https://yields.llama.fi/pools"
+    },
+    {
+      "project": "lista-lending",
+      "symbol": "USDT",
+      "apy": 3.66543,
+      "apyBase": 3.66543,
+      "apyReward": 0,
+      "tvlUsd": 2766125,
+      "pool": "8b4267ba-69b2-49c9-9a82-df98e24e1f0f",
+      "source": "https://yields.llama.fi/pools"
+    },
+    {
+      "project": "lista-lending",
+      "symbol": "USDT",
+      "apy": 6.6007,
+      "apyBase": 4.69258,
+      "apyReward": 1.90812,
+      "tvlUsd": 2240361,
+      "pool": "80a280c8-8225-4232-a2a6-70e6606acd84",
+      "source": "https://yields.llama.fi/pools"
+    },
+    {
+      "project": "venus-flux",
+      "symbol": "USDT",
+      "apy": 2.86,
+      "apyBase": 2.86,
+      "apyReward": 0,
+      "tvlUsd": 2145550,
+      "pool": "f45554c1-21be-4d8d-a974-d23c3ad47624",
+      "source": "https://yields.llama.fi/pools"
+    },
+    {
+      "project": "lista-lending",
+      "symbol": "USDT",
+      "apy": 1.82014,
+      "apyBase": 1.82014,
+      "apyReward": 0,
+      "tvlUsd": 1009765,
+      "pool": "1449c7a7-a915-4a42-94f4-4c93c851f0aa",
+      "source": "https://yields.llama.fi/pools"
+    },
+    {
+      "project": "lista-lending",
+      "symbol": "USDT",
+      "apy": 28.17465,
+      "apyBase": 28.17465,
+      "apyReward": 0,
+      "tvlUsd": 15689,
+      "pool": "d0841f19-a8ee-48fb-a905-e002c091362e",
+      "source": "https://yields.llama.fi/pools"
+    }
+  ]
+}

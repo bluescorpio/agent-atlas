@@ -1,0 +1,15 @@
+{
+  "fetched_at": "2026-09-03T22:40:39.581367+00:00",
+  "source": "https://yields.llama.fi/chart/d0841f19-a8ee-48fb-a905-e002c091362e",
+  "note": "Small-TVL Lista USDT pool; not used as primary comparison.",
+  "latest": {
+    "timestamp": "2026-09-03T22:01:34.970Z",
+    "tvlUsd": 15689,
+    "apy": 28.17465,
+    "apyBase": 28.17465,
+    "apyReward": 0,
+    "il7d": null,
+    "apyBase7d": null,
+    "pricePerShare": null
+  }
+}

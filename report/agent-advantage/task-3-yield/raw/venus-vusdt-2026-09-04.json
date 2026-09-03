@@ -1,0 +1,23 @@
+{
+  "fetched_at": "2026-09-03T22:40:39.544205+00:00",
+  "source": "https://api.venus.io/markets?chainId=56&limit=100",
+  "market": {
+    "symbol": "vUSDT",
+    "name": "Venus USDT",
+    "underlyingSymbol": "USDT",
+    "address": "0xfD5840Cd36d94D7229439859C0112a4185BC0255",
+    "chainId": "56",
+    "supplyApy": "3.040236012285181818",
+    "supplyApyDecimal": "0.0304023601",
+    "totalSupplyApyDecimal": "0.0304000000",
+    "borrowApy": "4.771563224081076314",
+    "borrowApyDecimal": "0.0477156322",
+    "totalBorrowApyDecimal": "0.0477200000",
+    "collateralFactorMantissa": "800000000000000000",
+    "liquidationThresholdMantissa": "800000000000000000",
+    "liquidationIncentiveMantissa": "1100000000000000000",
+    "totalSupplyUnderlyingCents": 18534817829,
+    "totalBorrowCents": 13231950347,
+    "liquidityCents": "5302876347.3997691992540326"
+  }
+}
