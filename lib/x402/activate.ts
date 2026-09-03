@@ -1,18 +1,36 @@
 import type { AgentListing } from '../types';
+import { activateWithErc8183, type Erc8183ActivationResult } from '../erc8183/activate';
 
-export type ActivationResult = { taskId: string; txHash: `0x${string}`; receipt: Record<string, unknown> };
+export type ActivationResult = Erc8183ActivationResult;
 
 /**
- * Server-side seam for the real ERC-8183/x402 flow. The facilitator URL,
- * settlement token, and payment header format are intentionally required from
- * confirmed Studio/Binance documentation before this function can sign.
+ * x402 / B402 path. Kept as a stable seam; B402 merchant credentials are not
+ * available yet so this always fails closed.
  */
-export async function activate(agent: AgentListing, params: Record<string, string>, wallet: string): Promise<ActivationResult> {
+export async function activateWithX402(
+  agent: AgentListing,
+  params: Record<string, string>,
+  wallet: string,
+): Promise<ActivationResult> {
+  void agent;
+  void params;
+  void wallet;
+  throw new Error('X402_B402_CREDENTIALS_NOT_READY');
+}
+
+/**
+ * Server-side activation. ERC-8183 is the live payment rail; x402 stays
+ * callable via {@link activateWithX402} once B402 credentials land.
+ */
+export async function activate(
+  agent: AgentListing,
+  params: Record<string, string>,
+  wallet: string,
+): Promise<ActivationResult> {
   if (agent.source !== 'live') throw new Error('DEMO_AGENT_NOT_ACTIVATABLE');
   if (!wallet) throw new Error('WALLET_NOT_CONNECTED');
   if (!agent.identity.endpoint) throw new Error('AGENT_ENDPOINT_REQUIRED');
-  const facilitator = process.env.X402_FACILITATOR_URL;
-  if (!facilitator) throw new Error('X402_FACILITATOR_URL_REQUIRED');
-  void params;
-  throw new Error('X402_PROTOCOL_CONFIRMATION_REQUIRED');
+  return activateWithErc8183(agent, params, wallet);
 }
+
+export { activateWithErc8183 } from '../erc8183/activate';

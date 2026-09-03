@@ -29,7 +29,11 @@ export function getMockAgents(): AgentListing[] {
     else if (r.category === 'rebalancing') metrics = { rebalancing: { inRangePct: metric(v[0], '%', '30d'), resets: metric(v[1], 'count', '30d'), tvlUsd: metric(v[2], 'USD', '30d') } };
     else if (r.category === 'yield') metrics = { yield: { realizedAprPct: metric(v[0], '%', '30d'), migrations: metric(v[1], 'count', '30d'), aumUsd: metric(v[2], 'USD', '30d') } };
     else metrics = { health_factor: { positionsGuarded: metric(v[0], 'count', '30d'), liquidationsPrevented: metric(v[1], 'count', '30d'), medianResponseMs: metric(v[2], 'ms', '30d') } };
-    return { identity: { agentId: r.agentId, owner: r.wallet as `0x${string}`, wallet: r.wallet as `0x${string}`, name: names[r.agentId], description: descriptions[r.category as Category], endpoint: r.endpoint, registeredAt: r.deployedAt }, category: r.category as Category, reputation: { feedbackCount: metric(38 + i, 'count'), score: metric(4.5 + i / 10), validations: metric(8 + i, 'count') }, metrics, status: { online: i !== 3, lastSeen: now, source: { kind: 'demo' } }, pricing: r.pricing as AgentListing['pricing'], protocols: r.protocols, capabilities: r.capabilities, limits: r.limits, source: 'demo', isDemo: true };
+    const source = r.source === 'live' ? 'live' as const : 'demo' as const;
+    const statusSource = source === 'live'
+      ? { kind: 'studio_status' as const, endpoint: r.endpoint }
+      : { kind: 'demo' as const };
+    return { identity: { agentId: r.agentId, owner: r.wallet as `0x${string}`, wallet: r.wallet as `0x${string}`, name: names[r.agentId], description: descriptions[r.category as Category], endpoint: r.endpoint, registeredAt: r.deployedAt }, category: r.category as Category, reputation: { feedbackCount: metric(38 + i, 'count'), score: metric(4.5 + i / 10), validations: metric(8 + i, 'count') }, metrics, status: { online: i !== 3, lastSeen: now, source: statusSource }, pricing: r.pricing as AgentListing['pricing'], protocols: r.protocols, capabilities: r.capabilities, limits: r.limits, source, isDemo: source !== 'live' };
   });
 }
 export function getMockAgent(id: string) { return getMockAgents().find(a => a.identity.agentId === id); }
