@@ -6,3 +6,8 @@ out
 .DS_Store
 agents/gridbnbusdt/
 .claude/skills/
+.cursor/
+*.tsbuildinfo
+# Encrypted keystores + studio local secrets (never commit)
+**/.studio/
+agents/**/.studio/
