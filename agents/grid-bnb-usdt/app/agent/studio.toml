@@ -28,6 +28,7 @@ destination = "platform"
 # Artifact channel: 'zip' (evm-local default — managed runtime, no Docker)
 # or 'container' (local Docker build → brokered ECR; forced for twak).
 platform_artifact = "zip"
+packaging = "zip"
 
 [wallet]
 # Local keystore signer. The Agent is the SOLE key-holder/signer.
@@ -37,6 +38,8 @@ kind = "evm-local"
 signer = "local"
 keystore_dir = "../../.studio/wallets"
 # address = "0x..."   # filled by `bag wallet new`
+address = "0x3573e861363880f18F357Ca8258FA1393573d676"
+platform_exposed_addresses = ["0x3573e861363880f18F357Ca8258FA1393573d676"]
 
 [llm]
 provider = "pieverse-llm"
@@ -49,6 +52,7 @@ network = "bsc-mainnet"
 # zero-deposit default. `bag llm activate` creates the key with $0
 # allocation; switch to a paid model + `bag llm topup` only when you need it.
 initial_allocation_usd = 0
+key_hash = "f3d9313e51ff175048551e1906fdfc444dead24486fa62c46f6d15d76ae1d291"
 
 [llm.auto_renew]
 # hook auto-allocates from Pieverse Account Balance to the API key when Key
@@ -70,7 +74,7 @@ currency = "0xc70B8741B8B07A6d61E54fd4B20f22Fa648E5565"   # $U token address —
 # All prices are in wei of the currency token. U has 18 decimals (not 6 like USDC).
 price = "100000000000000000"                    # wei; 0 = FREE (zero token escrow)
 min_price = "0"                                # wei — clamp floor
-max_price = ""                                 # wei — clamp ceiling; empty = unbounded; SET before going live
+max_price = "200000000000000000"                                 # wei — clamp ceiling; empty = unbounded; SET before going live
 quote_ttl_seconds = 900                        # seconds a signed quote stays valid; SDK caps at 900 (~15min work window)
 default_estimated_completion_seconds = 600
 poll_interval_seconds = 30
@@ -97,3 +101,17 @@ work_timeout_seconds = 60
 # Optional Bazaar metadata can be added later as scalar JSON fields under
 # [payments.b402_seller.bazaar]: info_json, schema_json, description,
 # and route_template.
+
+[deploy.platform]
+terms_accepted_at = "2026-09-03T07:59:35Z"
+slug = "gridbnbusdt"
+deployment_id = "01M1K4SSXBHXFGTGXWWRF0FNT0"
+backend = "aws"
+agent_id = "01M1K4SSXB6VA50K5C6FV6E4JK"
+invoke_url = "https://bnbagent-api.bnbchain.world/v1/rt/01M1K4SSXB6VA50K5C6FV6E4JK/.well-known/agent-card.json"
+last_deploy_at = "2026-09-03T08:05:39Z"
+
+[identity]
+endpoint = "https://bnbagent-api.bnbchain.world/v1/rt/01M1K4SSXB6VA50K5C6FV6E4JK/.well-known/agent-card.json"
+registered_at = "2026-09-03T08:33:56.190Z"
+agent_id = 2066
