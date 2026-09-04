@@ -53,6 +53,13 @@ Demo listings refuse activation with `DEMO_AGENT_NOT_ACTIVATABLE`. The marketpla
 | **Verified hire** | job `963` on BSC testnet — status **SUBMITTED** (not settled; 24h dispute window still open) |
 | **Deliverable** | [sha256/7a5646…51e5.json](https://bnbagent-api.bnbchain.world/v1/deliverables/sha256/7a5646139eefd148676d12a1e59c9f9e02a4c378cb9f235b74ede4808df251e5.json) |
 
+## Verification evidence
+
+- Activate API: `200` with `{ jobId: 963, status: SUBMITTED, deliverableUrl: ... }`
+- Deliverable: 10-level BNB/USDT grid, 500–600 USDT, step ≈11.11, 0.166 BNB/level
+
+![deliverable](docs/screenshots/04-deliverable.png)
+
 **ERC-8183 hire path (marketplace → seller):**
 
 1. A2A `negotiate` (data part) → signed quote (`0.1 U`, 15 min TTL)
@@ -64,11 +71,9 @@ Server entry: [`app/api/activate/route.ts`](./app/api/activate/route.ts) → [`l
 
 ## Screenshots
 
-Screenshots will be stored under [`docs/screenshots/`](./docs/screenshots/) after the next visual QA pass. Until then, the local demo is the canonical preview.
-
 | Rebalancing | Grid Trading |
 | --- | --- |
-| _Screenshot pending_ | _Screenshot pending_ |
+| ![home](docs/screenshots/01-home.png) | ![detail](docs/screenshots/02-agent-detail.png) |
 
 | Yield Optimisation | Health Factor |
 | --- | --- |
