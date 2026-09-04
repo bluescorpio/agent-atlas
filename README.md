@@ -1,6 +1,6 @@
 # Agent Atlas
 
-**Status: Live agent deployed + ERC-8183 buyer flow implemented; end-to-end hire pending final verification.**
+**Status: Live agent deployed + ERC-8183 hire verified end-to-end (job 963 SUBMITTED, deliverable fetched).**
 
 **Find, compare and hire DeFi agents on BNB Smart Chain.**
 

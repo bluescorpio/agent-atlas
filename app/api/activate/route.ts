@@ -12,6 +12,8 @@ function asParams(body: {
   quote?: unknown;
   negotiation_hash?: unknown;
 }): Record<string, string> {
+  // Task inputs come from `params` only (task / gridCount / lowerPrice /
+  // upperPrice / budgetCap). Top-level taskDescription / terms are ignored.
   const params: Record<string, string> = {};
   for (const [key, value] of Object.entries(body.params ?? {})) {
     if (value === undefined || value === null) continue;
@@ -56,7 +58,11 @@ export async function POST(request: Request) {
     const agent = body.agentId ? getMockAgent(body.agentId) : undefined;
     if (!agent) return NextResponse.json({ error: 'AGENT_NOT_FOUND' }, { status: 404 });
     const result = await activate(agent, asParams(body), body.wallet ?? '');
-    return NextResponse.json(result);
+    return NextResponse.json({
+      jobId: result.jobId,
+      status: result.status,
+      deliverableUrl: result.deliverableUrl,
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'ACTIVATION_FAILED';
     const status = message === 'DEMO_AGENT_NOT_ACTIVATABLE' ? 409 : 400;

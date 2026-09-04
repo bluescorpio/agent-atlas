@@ -1,4 +1,6 @@
 import {
+  DELIVERABLE_URL_INTERVAL_MS,
+  DELIVERABLE_URL_MAX_ATTEMPTS,
   JOB_STATUS_EXPIRED,
   JOB_STATUS_REJECTED,
   JOB_STATUS_SUBMITTED,
@@ -31,7 +33,34 @@ export type PollDeps = {
   sleep?: (ms: number) => Promise<void>;
   intervalMs?: number;
   maxAttempts?: number;
+  urlAttempts?: number;
+  urlIntervalMs?: number;
 };
+
+function usableUrl(url: string | null | undefined): string | null {
+  if (typeof url !== 'string') return null;
+  const trimmed = url.trim();
+  return trimmed ? trimmed : null;
+}
+
+/**
+ * After commerce reports SUBMITTED, keep reading `deliverable_url`.
+ * JobSubmitted / policy logs can lag status by tens of seconds.
+ */
+async function waitForDeliverableUrl(
+  client: JobPollClient,
+  jobId: bigint,
+  sleep: (ms: number) => Promise<void>,
+  urlAttempts: number,
+  urlIntervalMs: number,
+): Promise<string> {
+  for (let attempt = 0; attempt < urlAttempts; attempt += 1) {
+    const url = usableUrl(await client.getDeliverableUrl(jobId));
+    if (url) return url;
+    if (attempt < urlAttempts - 1) await sleep(urlIntervalMs);
+  }
+  throw new Error(`DELIVERABLE_URL_MISSING: job ${jobId.toString()} is SUBMITTED`);
+}
 
 /**
  * Poll commerce until the job is SUBMITTED, then read `deliverable_url`.
@@ -44,6 +73,8 @@ export async function pollUntilSubmitted(
   const sleep = deps.sleep ?? ((ms: number) => new Promise((resolve) => setTimeout(resolve, ms)));
   const intervalMs = deps.intervalMs ?? POLL_INTERVAL_MS;
   const maxAttempts = deps.maxAttempts ?? POLL_MAX_ATTEMPTS;
+  const urlAttempts = deps.urlAttempts ?? DELIVERABLE_URL_MAX_ATTEMPTS;
+  const urlIntervalMs = deps.urlIntervalMs ?? DELIVERABLE_URL_INTERVAL_MS;
 
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     const raw = await client.getJobStatus(jobId);
@@ -55,9 +86,7 @@ export async function pollUntilSubmitted(
       throw new Error(`JOB_EXPIRED: ${jobId.toString()}`);
     }
     if (status === JOB_STATUS_SUBMITTED || status === 3) {
-      const url = await client.getDeliverableUrl(jobId);
-      if (url) return url;
-      throw new Error(`DELIVERABLE_URL_MISSING: job ${jobId.toString()} is SUBMITTED`);
+      return waitForDeliverableUrl(client, jobId, sleep, urlAttempts, urlIntervalMs);
     }
     await sleep(intervalMs);
   }

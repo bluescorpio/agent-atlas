@@ -32,3 +32,7 @@ export const JOB_STATUS_EXPIRED = 5;
 
 export const POLL_INTERVAL_MS = 5_000;
 export const POLL_MAX_ATTEMPTS = 48;
+
+/** After SUBMITTED, retry deliverable_url this many times before failing. */
+export const DELIVERABLE_URL_MAX_ATTEMPTS = 12;
+export const DELIVERABLE_URL_INTERVAL_MS = 5_000;

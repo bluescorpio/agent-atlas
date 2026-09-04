@@ -26,12 +26,14 @@ import {
 import { renegotiateQuote } from './negotiate';
 import { notifyFunded, type NotifyFundedAck } from './notify';
 import { pollUntilSubmitted, type JobPollClient } from './poll';
+import { findReadableSubmittedJob, type ResumeClient } from './resume';
 import { buildTaskFromParams } from './task';
 
 export type Erc8183ActivationResult = {
   taskId: string;
   jobId: string;
-  txHash: `0x${string}`;
+  status: 'SUBMITTED';
+  txHash?: `0x${string}`;
   deliverableUrl: string;
   receipt: Record<string, unknown>;
 };
@@ -141,8 +143,6 @@ export async function activateWithErc8183(
   const nowMs = resolved.now ?? Date.now;
   const negotiate = resolved.negotiate ?? renegotiateQuote;
   const task = buildTaskFromParams(params, `Activate ${agent.identity.name}`);
-  const envelope = await resolveQuote(agent, params, task, nowMs, negotiate);
-  const nowSec = Math.floor(nowMs() / 1000);
 
   const buyer = resolved.createWallet?.() ?? buyerWallet();
   try {
@@ -154,6 +154,29 @@ export async function activateWithErc8183(
     if (getAddress(client.network.commerceContract) !== getAddress(ERC8183_COMMERCE)) {
       throw new Error(`ERC8183_COMMERCE_MISMATCH: expected ${ERC8183_COMMERCE}`);
     }
+    const existing = await findReadableSubmittedJob(
+      client as ResumeClient,
+      wallet,
+      agent.identity.wallet,
+    );
+    if (existing) {
+      return {
+        taskId: `erc8183:${existing.jobId}`,
+        jobId: existing.jobId,
+        status: 'SUBMITTED',
+        deliverableUrl: existing.deliverableUrl,
+        receipt: jsonSafe({
+          chainId: ERC8183_CHAIN_ID,
+          commerce: ERC8183_COMMERCE,
+          token: U_TOKEN,
+          provider: agent.identity.wallet,
+          resumed: true,
+          deliverableUrl: existing.deliverableUrl,
+        }),
+      };
+    }
+    const envelope = await resolveQuote(agent, params, task, nowMs, negotiate);
+    const nowSec = Math.floor(nowMs() / 1000);
     const paymentToken = await client.paymentToken();
     if (getAddress(paymentToken) !== getAddress(U_TOKEN)) {
       throw new Error(`ERC8183_TOKEN_MISMATCH: expected ${U_TOKEN}`);
@@ -204,6 +227,7 @@ export async function activateWithErc8183(
     return {
       taskId: `erc8183:${jobId.toString()}`,
       jobId: jobId.toString(),
+      status: 'SUBMITTED',
       txHash: fundTx,
       deliverableUrl,
       receipt: jsonSafe({

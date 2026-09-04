@@ -162,6 +162,7 @@ test('activateWithErc8183 runs createJob → registerJob → setBudget → fund 
   assert.deepEqual(calls, ['createJob', 'registerJob', 'setBudget', 'fund', 'poll', 'getDeliverableUrl']);
   assert.equal(notified, '42');
   assert.equal(result.jobId, '42');
+  assert.equal(result.status, 'SUBMITTED');
   assert.equal(result.txHash, '0xfund');
   assert.equal(result.taskId, 'erc8183:42');
   assert.equal(result.deliverableUrl, DELIVERABLE);
@@ -237,4 +238,69 @@ test('pollUntilSubmitted waits until SUBMITTED then reads deliverable_url', asyn
     { sleep: async () => undefined, intervalMs: 0, maxAttempts: 5 },
   );
   assert.equal(url, DELIVERABLE);
+});
+
+test('pollUntilSubmitted retries empty deliverable_url after SUBMITTED', async () => {
+  const urls: Array<string | null> = [null, null, DELIVERABLE];
+  const url = await pollUntilSubmitted(
+    {
+      getJobStatus: async () => 2,
+      getDeliverableUrl: async () => urls.shift() ?? DELIVERABLE,
+    },
+    BigInt(963),
+    { sleep: async () => undefined, intervalMs: 0, maxAttempts: 3, urlAttempts: 12, urlIntervalMs: 0 },
+  );
+  assert.equal(url, DELIVERABLE);
+});
+
+test('pollUntilSubmitted throws DELIVERABLE_URL_MISSING after URL retries', async () => {
+  let reads = 0;
+  await assert.rejects(
+    () => pollUntilSubmitted(
+      {
+        getJobStatus: async () => 2,
+        getDeliverableUrl: async () => {
+          reads += 1;
+          return null;
+        },
+      },
+      BigInt(963),
+      { sleep: async () => undefined, intervalMs: 0, maxAttempts: 2, urlAttempts: 12, urlIntervalMs: 0 },
+    ),
+    /DELIVERABLE_URL_MISSING: job 963 is SUBMITTED/,
+  );
+  assert.equal(reads, 12);
+});
+
+test('activateWithErc8183 returns an already SUBMITTED job with a readable URL', async () => {
+  const envelope = loadReportEnvelope();
+  const calls: string[] = [];
+  const result = await activateWithErc8183(
+    agent(),
+    { envelope: JSON.stringify(envelope) },
+    BUYER,
+    {
+      now: () => (Number((envelope.response as { quote_expires_at: number }).quote_expires_at) - 10) * 1000,
+      createWallet: () => ({ address: BUYER }),
+      createClient: async () => ({
+        ...fakeClient(calls),
+        getJob: async (jobId: bigint) => ({
+          client: BUYER,
+          provider: agent().identity.wallet,
+          status: 2,
+          id: jobId,
+        }),
+        commerce: { jobCounter: async () => BigInt(963) },
+        getDeliverableUrl: async () => DELIVERABLE,
+      }),
+      negotiate: async () => {
+        throw new Error('should not negotiate when a submitted job is readable');
+      },
+    },
+  );
+  assert.equal(result.jobId, '963');
+  assert.equal(result.status, 'SUBMITTED');
+  assert.equal(result.deliverableUrl, DELIVERABLE);
+  assert.equal(result.receipt.resumed, true);
+  assert.deepEqual(calls, []);
 });
