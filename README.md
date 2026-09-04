@@ -8,7 +8,7 @@ Agent Atlas is a marketplace for ERC-8004 agents on BNB Smart Chain, built for t
 
 - **Repository:** [github.com/bluescorpio/agent-atlas](https://github.com/bluescorpio/agent-atlas)
 - **Local demo:** `http://127.0.0.1:3000`
-- **Agent Advantage Report:** [`report/agent-advantage/`](./report/agent-advantage/) — three-task write-up; Task 1 hire/deliverable still **pending**; Tasks 2–3 use live Venus/DefiLlama reads (not the grid agent).
+- **Agent Advantage Report:** [`report/agent-advantage/`](./report/agent-advantage/) — three-task write-up; Task 1 hire **Complete** ([job 963](https://bnbagent-api.bnbchain.world/v1/deliverables/sha256/7a5646139eefd148676d12a1e59c9f9e02a4c378cb9f235b74ede4808df251e5.json) `SUBMITTED`); Tasks 2–3 use live Venus/DefiLlama reads (not the grid agent).
 
 > **Live + demo mix.** One Agent Studio agent (`grid-bnb-usdt`) is deployed on BSC testnet and hireable through the ERC-8183 path. The other seven marketplace listings remain labelled **Demo — not deployed**.
 
@@ -50,6 +50,8 @@ Demo listings refuse activation with `DEMO_AGENT_NOT_ACTIVATABLE`. The marketpla
 | **Network** | BSC testnet (`chain_id=97`) |
 | **Deployed** | 2026-09-03 (BNB Agent Studio trial / AWS AgentCore) |
 | **Price** | `0.10 U` per task |
+| **Verified hire** | job `963` on BSC testnet — status **SUBMITTED** (not settled; 24h dispute window still open) |
+| **Deliverable** | [sha256/7a5646…51e5.json](https://bnbagent-api.bnbchain.world/v1/deliverables/sha256/7a5646139eefd148676d12a1e59c9f9e02a4c378cb9f235b74ede4808df251e5.json) |
 
 **ERC-8183 hire path (marketplace → seller):**
 
@@ -134,12 +136,12 @@ Next.js 15 (App Router) · TypeScript · `viem` + `wagmi` · TanStack Query · B
 - [x] Category, detail, compare and My agents route skeletons.
 - [x] Deploy `grid-bnb-usdt` on BNB Agent Studio (BSC testnet trial); `hf-guard-venus` still Planned.
 - [x] Marketplace ERC-8183 buyer path: negotiate → fund → notify_funded → poll `SUBMITTED`.
-- [ ] End-to-end hire verification on BSC testnet (fund + deliverable receipt recorded in the report).
+- [x] End-to-end hire verification on BSC testnet (job `963` `SUBMITTED`, deliverable fetched; not settled).
 - [ ] Read ERC-8004 identity and reputation from BSC for live listings.
 - [ ] Compute category metrics from onchain transaction history.
 - [ ] x402 / B402 activation (credentials not ready; ERC-8183 is the live rail).
 - [ ] Deploy `yield-stable-router` and `rebalancing-pcs-v3`.
-- [x] Capture the three-task Agent Advantage Report (Task 1 negotiate + U top-up tx; fund/deliverable pending; Tasks 2–3 public-data checks).
+- [x] Capture the three-task Agent Advantage Report (Task 1 Complete / job 963; Tasks 2–3 public-data checks).
 
 ## Hackathon
 

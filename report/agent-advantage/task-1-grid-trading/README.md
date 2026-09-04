@@ -7,12 +7,12 @@
 
 ## Status: Complete (verified 2026-09-04)
 
-- Job: 963 (BSC testnet, chain 97)
-- Client: 0xc4dedeC81d9285DDD66c4A29f1B268A478fFEd95
-- Provider: 0x3573e861363880f18F357Ca8258FA1393573d676
-- Budget: 0.1 U | Status: SUBMITTED
-- Deliverable: https://bnbagent-api.bnbchain.world/v1/deliverables/sha256/7a5646139eefd148676d12a1e59c9f9e02a4c378cb9f235b74ede4808df251e5.json
-- Result: 10-level BNB/USDT grid, 500–600 USDT, step ≈11.11, 0.166 BNB/level, buy 500–544.44 / sell 555.56–600
+- Job: 963（BSC testnet, chain 97）
+- Client: `0xc4dedeC81d9285DDD66c4A29f1B268A478fFEd95`
+- Provider: `0x3573e861363880f18F357Ca8258FA1393573d676`
+- Budget: 0.1 U | Status: **SUBMITTED**（未 settle；24h 争议窗口未过，不作 COMPLETED 声称）
+- Deliverable: https://bnbagent-api.bnbchain.world/v1/deliverables/sha256/7a5646139eefd148676d12a1e59c9f9e02a4c378cb9f235b74ede4808df251e5.json （公开可读，内容已核实）
+- 结果：10 档 BNB/USDT 网格，500–600 USDT，步长 ≈11.11，单档 0.166 BNB，500–544.44 Buy / 555.56–600 Sell
 
 ## 人工完成
 
@@ -33,8 +33,8 @@
 - tx hash（备资，**不是** fund tx）：买家曾收到 2 U  
   `0xb584049be11d26cc1a79cba2ad75ccbf01d5dffee6d6555e330815ebdd6becfa`  
   https://testnet.bscscan.com/tx/0xb584049be11d26cc1a79cba2ad75ccbf01d5dffee6d6555e330815ebdd6becfa  
-  雇佣收据以 **job 963** `SUBMITTED` + 上列 deliverable URL 为准（activate 接口当时因 `DELIVERABLE_URL_MISSING` 竞态未返回 fund tx hash）。
+  雇佣收据以 **job 963** `SUBMITTED` + 上列 deliverable URL 为准。Activate 现返回 `200` `{ jobId, status, deliverableUrl }`；未记录 fund tx hash，不编造。
 
 ## 结论
 
-人工 3 分钟排出同价梯子但没有 size。Agent 在 job 963 上以 **0.1 U** 交出带 size 的 10 档计划，链上状态 **SUBMITTED**。价格算术与人工一致；size/方向是规则网格，不是盘口优化。
+人工 3 分钟排出同价梯子但没有 size。Agent 在 job 963 上以 **0.1 U** 交出带 size 的 10 档计划，链上状态 **SUBMITTED**（不是 COMPLETED / settled）。价格算术与人工一致；size/方向是规则网格，不是盘口优化。
