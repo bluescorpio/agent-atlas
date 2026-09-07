@@ -48,11 +48,9 @@ model = "auto/free"
 [llm.pieverse]
 # Pieverse topup runs ONLY on BSC mainnet (chainId=56); decoupled from [network].default.
 network = "bsc-mainnet"
-# key_hash = "..."        # written by `bag llm activate`
 # zero-deposit default. `bag llm activate` creates the key with $0
 # allocation; switch to a paid model + `bag llm topup` only when you need it.
 initial_allocation_usd = 0
-key_hash = "f3d9313e51ff175048551e1906fdfc444dead24486fa62c46f6d15d76ae1d291"
 
 [llm.auto_renew]
 # hook auto-allocates from Pieverse Account Balance to the API key when Key

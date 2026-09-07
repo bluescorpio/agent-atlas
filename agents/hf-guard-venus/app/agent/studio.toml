@@ -29,6 +29,14 @@ destination = "platform"
 # or 'container' (local Docker build → brokered ECR; forced for twak).
 platform_artifact = "zip"
 packaging = "zip"
+iam_notice_accepted_at = "2026-09-07T05:30:27Z"
+iam_notice_version = 1
+last_deploy_at = "2026-09-07T05:55:43Z"
+provider = "aws"
+runtime_arn = "arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/hfguardvenus-sG614z4iLZ"
+invoke_url = "https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Fhfguardvenus-sG614z4iLZ/invocations?qualifier=DEFAULT"
+oauth_client_id = "chtopvung16glktss3assicu5"
+oauth_discovery_url = "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_yx8QfJRRu/.well-known/openid-configuration"
 
 [wallet]
 # Local keystore signer. The Agent is the SOLE key-holder/signer.
@@ -38,7 +46,7 @@ kind = "evm-local"
 signer = "local"
 keystore_dir = "../../.studio/wallets"
 # address = "0x..."   # filled by `bag wallet new`
-address = "0x3573e861363880f18F357Ca8258FA1393573d676"
+address = "0xaaBd845B763761af98eE516a2a08829AEf548Cf3"
 platform_exposed_addresses = ["0x3573e861363880f18F357Ca8258FA1393573d676"]
 
 [llm]
@@ -48,11 +56,10 @@ model = "auto/free"
 [llm.pieverse]
 # Pieverse topup runs ONLY on BSC mainnet (chainId=56); decoupled from [network].default.
 network = "bsc-mainnet"
-# key_hash = "..."        # written by `bag llm activate`
 # zero-deposit default. `bag llm activate` creates the key with $0
 # allocation; switch to a paid model + `bag llm topup` only when you need it.
 initial_allocation_usd = 0
-key_hash = "f3d9313e51ff175048551e1906fdfc444dead24486fa62c46f6d15d76ae1d291"
+key_hash = "6a64c09bc5a55a77905f3920df081afdd98a52ae11ab5b27f69170d43e41623b"
 
 [llm.auto_renew]
 # hook auto-allocates from Pieverse Account Balance to the API key when Key
@@ -114,6 +121,6 @@ invoke_url = "https://bnbagent-api.bnbchain.world/v1/rt/01M1K4SSXB6VA50K5C6FV6E4
 last_deploy_at = "2026-09-03T08:05:39Z"
 
 [identity]
-endpoint = "https://bnbagent-api.bnbchain.world/v1/rt/01M1K4SSXB6VA50K5C6FV6E4JK/.well-known/agent-card.json"
+endpoint = "https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Fhfguardvenus-sG614z4iLZ/invocations?qualifier=DEFAULT"
 registered_at = "2026-09-03T08:33:56.190Z"
 agent_id = 2066

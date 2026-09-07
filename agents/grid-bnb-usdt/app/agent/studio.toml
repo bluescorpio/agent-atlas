@@ -29,6 +29,14 @@ destination = "platform"
 # or 'container' (local Docker build → brokered ECR; forced for twak).
 platform_artifact = "zip"
 packaging = "zip"
+iam_notice_accepted_at = "2026-09-07T06:48:58Z"
+iam_notice_version = 1
+last_deploy_at = "2026-09-07T06:49:43Z"
+provider = "aws"
+runtime_arn = "arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/gridbnbusdt-bohsdVE5Pv"
+invoke_url = "https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Fgridbnbusdt-bohsdVE5Pv/invocations?qualifier=DEFAULT"
+oauth_client_id = "3pn5ccnsb9h7utc8oic25l9iq"
+oauth_discovery_url = "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_yx8QfJRRu/.well-known/openid-configuration"
 
 [wallet]
 # Local keystore signer. The Agent is the SOLE key-holder/signer.
@@ -114,6 +122,7 @@ invoke_url = "https://bnbagent-api.bnbchain.world/v1/rt/01M1K4SSXB6VA50K5C6FV6E4
 last_deploy_at = "2026-09-03T08:05:39Z"
 
 [identity]
-endpoint = "https://bnbagent-api.bnbchain.world/v1/rt/01M1K4SSXB6VA50K5C6FV6E4JK/.well-known/agent-card.json"
-registered_at = "2026-09-03T08:33:56.190Z"
+endpoint = "https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Fgridbnbusdt-bohsdVE5Pv/invocations?qualifier=DEFAULT"
+registered_at = "2026-09-07T07:03:15.113Z"
 agent_id = 2066
+last_register_tx = "0xaa632e0936d7afb38bbe9bcd8631d1af4fc53620b2c559d1d8fe02b0be169354"

@@ -1,7 +1,3 @@
 [
-  {
-    "name": "default",
-    "account": "FILL_IN_AWS_ACCOUNT_ID",
-    "region": "us-east-1"
-  }
+  { "name": "default", "account": "850122838544", "region": "us-east-1" }
 ]
