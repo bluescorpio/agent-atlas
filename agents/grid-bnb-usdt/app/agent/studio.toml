@@ -31,7 +31,7 @@ platform_artifact = "zip"
 packaging = "zip"
 iam_notice_accepted_at = "2026-09-07T06:48:58Z"
 iam_notice_version = 1
-last_deploy_at = "2026-09-07T06:49:43Z"
+last_deploy_at = "2026-09-07T08:29:40Z"
 provider = "aws"
 runtime_arn = "arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/gridbnbusdt-bohsdVE5Pv"
 invoke_url = "https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Fgridbnbusdt-bohsdVE5Pv/invocations?qualifier=DEFAULT"

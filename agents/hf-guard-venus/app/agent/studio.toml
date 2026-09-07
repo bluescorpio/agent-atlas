@@ -122,5 +122,5 @@ last_deploy_at = "2026-09-03T08:05:39Z"
 
 [identity]
 endpoint = "https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Fhfguardvenus-sG614z4iLZ/invocations?qualifier=DEFAULT"
-registered_at = "2026-09-03T08:33:56.190Z"
-agent_id = 2066
+registered_at = "2026-09-07T08:54:13.943Z"
+agent_id = 2208

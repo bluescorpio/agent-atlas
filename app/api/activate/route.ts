@@ -31,7 +31,7 @@ function asParams(body: {
 
 function nextStepFor(error: string): string {
   if (error === 'DEMO_AGENT_NOT_ACTIVATABLE') {
-    return 'This listing is Demo — not deployed. Hire a live agent (grid-bnb-usdt or venus-guardian) via ERC-8183.';
+    return 'This listing is Demo — not deployed. Hire a live agent (grid-bnb-usdt, rebalancing-pcs-v3, hf-guard-venus, or yield-stable-router) via ERC-8183.';
   }
   if (error === 'WALLET_NOT_CONNECTED') {
     return 'Connect a wallet, then retry. The address must match ERC8183_BUYER_PRIVATE_KEY on the server.';

@@ -2,7 +2,7 @@
 
 - 领域：Trading
 - 日期：2026-09-03 (negotiate) / 2026-09-04 (human ladder + ERC-8183 hire verified)
-- 使用的 Agent：Grid BNB / USDT (`grid-bnb-usdt`), ERC-8004 agent_id `2066`, wallet [`0x3573e861363880f18F357Ca8258FA1393573d676`](https://testnet.bscscan.com/address/0x3573e861363880f18F357Ca8258FA1393573d676)
+- 使用的 Agent：Grid BNB / USDT (`grid-bnb-usdt`), ERC-8004 agent_id `2066`, wallet [`0x3573e861363880f18F357Ca8258FA1393573d676`](https://testnet.bscscan.com/address/0x3573e861363880f18F357Ca8258FA1393573d676). AWS AgentCore runtime (2026-09-07): `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/gridbnbusdt-bohsdVE5Pv`.
 - 任务描述：搭一个 **10 层** BNB/USDT 网格，价格区间 **500–600 USDT**。人工手算梯子 vs 已部署 seller 的 A2A `negotiate` 报价（目标 deliverable：`grid plan with prices and sizes`）。
 
 ## Status: Complete (verified 2026-09-04)

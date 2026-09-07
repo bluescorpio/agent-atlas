@@ -1,3 +1,16 @@
-# LP Range Keeper
+# Rebalancing PCS v3 (`rebalancing-pcs-v3`)
 
-Reserved for the BNB Agent Studio deployment defined in SPEC.md.
+BNB Agent Studio seller. Marketplace listing `rebalancing-pcs-v3` is **live**. Demo listings `lp-range-keeper` / `range-pilot` stay demo.
+
+## Intended behaviour
+
+- LLM tools (read-only): `v3_pool_slot0`, `v3_pool_liquidity`, `v3_pool_token0`, `v3_pool_token1`.
+- **Does not** mint, burn, collect, or move LP positions.
+
+## Deployment status (2026-09-07)
+
+| Field | Value |
+| --- | --- |
+| **ERC-8004** | `2207` |
+| **Wallet** | `0x48566287e8afDE4Eb7550f44f778E4C1a3B2EC32` |
+| **AgentCore runtime** | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/rebalancingpcsv3-P5Q200A9kZ` |

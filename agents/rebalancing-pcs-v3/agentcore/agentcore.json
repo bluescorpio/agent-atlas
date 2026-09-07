@@ -1,11 +1,11 @@
 {
   "$schema": "https://schema.agentcore.aws.dev/v1/agentcore.json",
-  "name": "gridbnbusdt",
+  "name": "rebalancingpcsv3",
   "version": 1,
   "managedBy": "CDK",
   "runtimes": [
     {
-      "name": "gridbnbusdt",
+      "name": "rebalancingpcsv3",
       "build": "CodeZip",
       "entrypoint": "dist/unifiedMain.js",
       "codeLocation": "app/agent/",
@@ -15,9 +15,26 @@
         {
           "name": "OTEL_TRACES_EXPORTER",
           "value": "none"
+        },
+        {
+          "name": "OAUTH_TOKEN_URL",
+          "value": "https://bnbagent-850122838544.auth.us-east-1.amazoncognito.com/oauth2/token"
+        },
+        {
+          "name": "OAUTH_SCOPE",
+          "value": "bnbagent-seller/invoke"
         }
       ],
-      "runtimeVersion": "NODE_22"
+      "runtimeVersion": "NODE_22",
+      "authorizerType": "CUSTOM_JWT",
+      "authorizerConfiguration": {
+        "customJwtAuthorizer": {
+          "discoveryUrl": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_yx8QfJRRu/.well-known/openid-configuration",
+          "allowedClients": [
+            "67vlfr0f7piov7em6p47hr1u7f"
+          ]
+        }
+      }
     }
   ]
 }

@@ -1,6 +1,6 @@
-# gridbnbusdt — A2A + X402 seller agent (managed-platform trial)
+# yield-stable-router — A2A + X402 seller agent (managed-platform trial)
 
-The valuable Agent and the **SOLE key-holder/signer** for the gridbnbusdt seller,
+The valuable Agent and the **SOLE key-holder/signer** for the yield-stable-router seller,
 configured for the **BNB Chain managed platform** (`[deploy].destination =
 "platform"`) — a 48h **testnet-only** trial sandbox. It serves the SAME
 A2A + X402 surface as a self-deploy (`serveA2a`: the agent card at `/.well-known/agent-card.json` + JSON-RPC `message/send` on `0.0.0.0:9000`); every signing op is fixed

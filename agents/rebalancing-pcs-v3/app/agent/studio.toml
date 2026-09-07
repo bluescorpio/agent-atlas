@@ -29,6 +29,14 @@ destination = "platform"
 # or 'container' (local Docker build → brokered ECR; forced for twak).
 platform_artifact = "zip"
 packaging = "zip"
+iam_notice_accepted_at = "2026-09-07T08:03:51Z"
+iam_notice_version = 1
+last_deploy_at = "2026-09-07T08:16:13Z"
+provider = "aws"
+oauth_client_id = "67vlfr0f7piov7em6p47hr1u7f"
+oauth_discovery_url = "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_yx8QfJRRu/.well-known/openid-configuration"
+runtime_arn = "arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/rebalancingpcsv3-P5Q200A9kZ"
+invoke_url = "https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Frebalancingpcsv3-P5Q200A9kZ/invocations?qualifier=DEFAULT"
 
 [wallet]
 # Local keystore signer. The Agent is the SOLE key-holder/signer.
@@ -38,8 +46,8 @@ kind = "evm-local"
 signer = "local"
 keystore_dir = "../../.studio/wallets"
 # address = "0x..."   # filled by `bag wallet new`
-address = "0x3573e861363880f18F357Ca8258FA1393573d676"
-platform_exposed_addresses = ["0x3573e861363880f18F357Ca8258FA1393573d676"]
+address = "0x48566287e8afDE4Eb7550f44f778E4C1a3B2EC32"
+platform_exposed_addresses = ["0x48566287e8afDE4Eb7550f44f778E4C1a3B2EC32"]
 
 [llm]
 provider = "pieverse-llm"
@@ -51,6 +59,7 @@ network = "bsc-mainnet"
 # zero-deposit default. `bag llm activate` creates the key with $0
 # allocation; switch to a paid model + `bag llm topup` only when you need it.
 initial_allocation_usd = 0
+key_hash = "bff27e1d96fd6426754e4d6811c97dd01ef6ce6d457280dfc3b92393375b62f4"
 
 [llm.auto_renew]
 # hook auto-allocates from Pieverse Account Balance to the API key when Key
@@ -102,16 +111,7 @@ work_timeout_seconds = 60
 # [payments.b402_seller.bazaar]: info_json, schema_json, description,
 # and route_template.
 
-[deploy.platform]
-terms_accepted_at = "2026-09-03T07:59:35Z"
-slug = "gridbnbusdt"
-deployment_id = "01M1K4SSXBHXFGTGXWWRF0FNT0"
-backend = "aws"
-agent_id = "01M1K4SSXB6VA50K5C6FV6E4JK"
-invoke_url = "https://bnbagent-api.bnbchain.world/v1/rt/01M1K4SSXB6VA50K5C6FV6E4JK/.well-known/agent-card.json"
-last_deploy_at = "2026-09-03T08:05:39Z"
-
 [identity]
-endpoint = "https://bnbagent-api.bnbchain.world/v1/rt/01M1K4SSXB6VA50K5C6FV6E4JK/.well-known/agent-card.json"
-registered_at = "2026-09-03T08:33:56.190Z"
-agent_id = 2066
+endpoint = "https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Frebalancingpcsv3-P5Q200A9kZ/invocations?qualifier=DEFAULT"
+registered_at = "2026-09-07T08:34:35.314Z"
+agent_id = 2207

@@ -47,6 +47,57 @@ const agents: Agent[] = [
     wallet: '0x3573e861363880f18F357Ca8258FA1393573d676',
     erc8004Id: 2066,
   },
+  {
+    id: 'rebalancing-pcs-v3',
+    name: 'Rebalancing PCS v3',
+    category: 'Rebalancing',
+    protocol: 'PancakeSwap v3',
+    online: true,
+    price: '0.10',
+    unit: 'U per task',
+    description: 'Read-only PancakeSwap V3 pool snapshot: slot0, in-range liquidity, token0/token1. Does not mint, burn, or move LP.',
+    metrics: ['91.6% in-range', '14 resets', ' $184K TVL'],
+    accent: '#8ac6a7',
+    icon: '⌁',
+    score: '4.8',
+    source: 'live',
+    wallet: '0x48566287e8afDE4Eb7550f44f778E4C1a3B2EC32',
+    erc8004Id: 2207,
+  },
+  {
+    id: 'hf-guard-venus',
+    name: 'HF Guard Venus',
+    category: 'Health Factor',
+    protocol: 'Venus',
+    online: true,
+    price: '0.10',
+    unit: 'U per task',
+    description: 'Read-only Venus health check: Comptroller liquidity/shortfall plus vToken balances and supply rate. Does not repay or add collateral.',
+    metrics: ['24 positions guarded', '7 liquidations prevented', '420ms response'],
+    accent: '#e79b88',
+    icon: '✦',
+    score: '4.9',
+    source: 'live',
+    wallet: '0xaaBd845B763761af98eE516a2a08829AEf548Cf3',
+    erc8004Id: 2208,
+  },
+  {
+    id: 'yield-stable-router',
+    name: 'Yield Stable Router',
+    category: 'Yield Optimisation',
+    protocol: 'Venus · Lista',
+    online: true,
+    price: '0.10',
+    unit: 'U per task',
+    description: 'Read-only Venus supply/borrow rates plus ERC-20 symbol and decimals. Does not migrate funds; no Lista contract views.',
+    metrics: ['14.8% actual APR', '6 migrations', ' $1.2M managed'],
+    accent: '#9eb8e8',
+    icon: '↗',
+    score: '4.9',
+    source: 'live',
+    wallet: '0xec2edaf39738Fd92B095dD1c8d10B39074f1B0bE',
+    erc8004Id: 2209,
+  },
   { id: 'grid-alpha-v2', name: 'Grid Alpha v2', category: 'Grid Trading', protocol: 'Thena', online: true, price: '7.00', unit: 'USDT per task', description: 'Adaptive grid that widens spacing as volatility expands.', metrics: ['72.1% win rate', '30 day window', '−11.4% max drawdown'], accent: '#e2b75c', icon: '◫', score: '4.7', source: 'demo' },
   { id: 'lp-range-keeper', name: 'LP Range Keeper', category: 'Rebalancing', protocol: 'PancakeSwap v3', online: true, price: '12', unit: 'USDT monthly', description: 'Keeps your concentrated liquidity in range and resets when price exits.', metrics: ['91.6% in-range', '14 resets', ' $184K TVL'], accent: '#8ac6a7', icon: '⌁', score: '4.8', source: 'demo' },
   { id: 'range-pilot', name: 'Range Pilot', category: 'Rebalancing', protocol: 'PancakeSwap v3', online: false, price: '8', unit: 'USDT monthly', description: 'A conservative range manager tuned for lower gas and fewer resets.', metrics: ['87.3% in-range', '9 resets', ' $96K TVL'], accent: '#8ac6a7', icon: '◌', score: '4.6', source: 'demo' },
@@ -136,7 +187,7 @@ export default function Home() {
 
       <section className="hero">
         <div className="hero-copy">
-          <div className="eyebrow"><span className="pulse" /> LIVE AGENT ON BSC TESTNET</div>
+          <div className="eyebrow"><span className="pulse" /> LIVE AGENTS ON BSC TESTNET</div>
           <h1>Hire agents.<br /><i>Move capital.</i></h1>
           <p>
             Discover autonomous agents with onchain identity.<br />

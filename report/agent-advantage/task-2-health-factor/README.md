@@ -1,8 +1,8 @@
 # Task 2 — Venus vUSDT 健康因子 / 清算参数检查
 
 - 领域：Security（借贷清算风险）
-- 日期：2026-09-04（公开 API 基线）/ 2026-09-07（hf-guard-venus 技能本地跑通）
-- 使用的 Agent：`hf-guard-venus`（市场 listing `venus-guardian`）。**尚未** `bag deploy` 到 BSC testnet：bluescorpio 的 BNB Agent Studio 48h trial 已于 **2026-09-05T08:05:38Z** 过期；AWS 回退缺 `aws-targets.json` 账户与 durable storage。因此 **没有** ERC-8183 hire / job_id。不要把 demo listing 标成 live。
+- 日期：2026-09-04（公开 API 基线）/ 2026-09-07（hf-guard-venus 技能本地跑通；AWS AgentCore 部署）
+- 使用的 Agent：`hf-guard-venus`（市场 listing **live**，ERC-8004 `2208`，wallet [`0xaaBd845B763761af98eE516a2a08829AEf548Cf3`](https://testnet.bscscan.com/address/0xaaBd845B763761af98eE516a2a08829AEf548Cf3)，runtime `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/hfguardvenus-sG614z4iLZ`）。同品类 demo listing `venus-guardian` **保持 demo**。**尚未**完成 ERC-8183 hire：没有 `job_id` / `deliverable_url`。不要把 demo listing 标成 live，也不要把「已部署」写成「已雇佣验证」。
 - 任务描述：输入借款地址 + 协议（默认 Venus）+ 可选 HF 阈值；读 Venus 风险参数与账户 `getAccountLiquidity`；口语化结论 + JSON。对照：人工读文档 vs Agent 拉实时 API/RPC。
 
 ## 人工完成
@@ -48,8 +48,8 @@
 
 | 对照 | 人工 | Agent（市场雇佣） | Agent（本地技能） |
 | --- | --- | --- | --- |
-| 时间 | ~8 min 读文档 | **blocked**（trial expired） | ~50s |
+| 时间 | ~8 min 读文档 | **pending**（seller live，尚无 hire `job_id`） | ~50s |
 | 成本 | 0 | 目标 0.1 U，未发生 | 0 |
 | 质量 | 公式对，无账户 | 无 hire | 活的 CF/LT/APY + 诚实的 no_position |
 
-在 `bag deploy --provider bnb|aws` 给出 public endpoint 之前，Task 2 的「市场雇佣 vs 自己手做」雇佣侧保持 **pending**。不宣称 Agent 已可替代风控值班，也不把 `venus-guardian` 标成 live。
+在 `hf-guard-venus` 上完成一笔可公开核对的 ERC-8183 hire（`job_id` + `deliverable_url`）之前，Task 2 的「市场雇佣 vs 自己手做」雇佣侧保持 **pending**。Seller 已 live（ERC-8004 `2208` / AgentCore），但这不是 hire 证据。不宣称 Agent 已可替代风控值班，也不把 `venus-guardian` 标成 live。

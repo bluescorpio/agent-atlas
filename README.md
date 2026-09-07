@@ -1,6 +1,6 @@
 # Agent Atlas
 
-**Status: Live agent deployed + ERC-8183 hire verified end-to-end (job 963 SUBMITTED, deliverable fetched).**
+**Status: Four live AgentCore sellers + ERC-8183 hire verified on grid (job 963 SUBMITTED, deliverable fetched).**
 
 **Find, compare and hire DeFi agents on BNB Smart Chain.**
 
@@ -8,9 +8,9 @@ Agent Atlas is a marketplace for ERC-8004 agents on BNB Smart Chain, built for t
 
 - **Repository:** [github.com/bluescorpio/agent-atlas](https://github.com/bluescorpio/agent-atlas)
 - **Local demo:** `http://127.0.0.1:3000`
-- **Agent Advantage Report:** [`report/agent-advantage/`](./report/agent-advantage/) — three-task write-up; Task 1 hire **Complete** ([job 963](https://bnbagent-api.bnbchain.world/v1/deliverables/sha256/7a5646139eefd148676d12a1e59c9f9e02a4c378cb9f235b74ede4808df251e5.json) `SUBMITTED`); Tasks 2–3 use live Venus/DefiLlama reads (not the grid agent).
+- **Agent Advantage Report:** [`report/agent-advantage/`](./report/agent-advantage/) — three-task write-up; Task 1 hire **Complete** ([job 963](https://bnbagent-api.bnbchain.world/v1/deliverables/sha256/7a5646139eefd148676d12a1e59c9f9e02a4c378cb9f235b74ede4808df251e5.json) `SUBMITTED`); Tasks 2–3 still record public-data checks. Four sellers are now live on AWS AgentCore (see below).
 
-> **Live + demo mix.** One Agent Studio agent (`grid-bnb-usdt`) is deployed on BSC testnet and hireable through the ERC-8183 path. The other seven marketplace listings remain labelled **Demo — not deployed**.
+> **Live + demo mix.** Four Agent Studio sellers (`grid-bnb-usdt`, `rebalancing-pcs-v3`, `hf-guard-venus`, `yield-stable-router`) are deployed on AWS AgentCore with ERC-8004 ids on BSC testnet and labelled **Live**. The other seven marketplace listings remain labelled **Demo — not deployed**. Demo listings refuse activation (`DEMO_AGENT_NOT_ACTIVATABLE`). Verified ERC-8183 hire evidence is still job `963` on `grid-bnb-usdt` only.
 
 ## Why this exists
 
@@ -39,19 +39,22 @@ Demo listings refuse activation with `DEMO_AGENT_NOT_ACTIVATABLE`. The marketpla
 
 ## Live deployment
 
-| Field | Value |
+Four AWS AgentCore runtimes (account `850122838544`, region `us-east-1`). Hire rail is ERC-8183 on BSC testnet (`chain_id=97`). Price: `0.10 U` per task.
+
+| Agent | ERC-8004 | Wallet | AgentCore runtime ARN |
+| --- | --- | --- | --- |
+| Grid BNB / USDT (`grid-bnb-usdt`) | `2066` | [`0x3573e861363880f18F357Ca8258FA1393573d676`](https://testnet.bscscan.com/address/0x3573e861363880f18F357Ca8258FA1393573d676) | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/gridbnbusdt-bohsdVE5Pv` |
+| Rebalancing PCS v3 (`rebalancing-pcs-v3`) | `2207` | [`0x48566287e8afDE4Eb7550f44f778E4C1a3B2EC32`](https://testnet.bscscan.com/address/0x48566287e8afDE4Eb7550f44f778E4C1a3B2EC32) | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/rebalancingpcsv3-P5Q200A9kZ` |
+| HF Guard Venus (`hf-guard-venus`) | `2208` | [`0xaaBd845B763761af98eE516a2a08829AEf548Cf3`](https://testnet.bscscan.com/address/0xaaBd845B763761af98eE516a2a08829AEf548Cf3) | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/hfguardvenus-sG614z4iLZ` |
+| Yield Stable Router (`yield-stable-router`) | `2209` | [`0xec2edaf39738Fd92B095dD1c8d10B39074f1B0bE`](https://testnet.bscscan.com/address/0xec2edaf39738Fd92B095dD1c8d10B39074f1B0bE) | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/yieldstablerouter-FscO4qDKDv` |
+
+Invoke URLs are the AgentCore `/invocations?qualifier=DEFAULT` endpoints recorded in [`lib/registry.json`](./lib/registry.json).
+
+| Field | Grid hire evidence (unchanged) |
 | --- | --- |
-| **Agent** | Grid BNB / USDT (`grid-bnb-usdt`) |
-| **ERC-8004 agent_id** | `2066` |
-| **Wallet** | [`0x3573e861363880f18F357Ca8258FA1393573d676`](https://bscscan.com/address/0x3573e861363880f18F357Ca8258FA1393573d676) |
-| **BscScan** | https://bscscan.com/address/0x3573e861363880f18F357Ca8258FA1393573d676 |
-| **Endpoint / agent card** | https://bnbagent-api.bnbchain.world/v1/rt/01M1K4SSXB6VA50K5C6FV6E4JK/.well-known/agent-card.json |
-| **A2A invoke** | https://bnbagent-api.bnbchain.world/v1/rt/01M1K4SSXB6VA50K5C6FV6E4JK/a2a |
-| **Network** | BSC testnet (`chain_id=97`) |
-| **Deployed** | 2026-09-03 (BNB Agent Studio trial / AWS AgentCore) |
-| **Price** | `0.10 U` per task |
-| **Verified hire** | job `963` on BSC testnet — status **SUBMITTED** (not settled; 24h dispute window still open) |
+| **Verified hire** | job `963` on BSC testnet — status **SUBMITTED** (not settled; 24h dispute window) |
 | **Deliverable** | [sha256/7a5646…51e5.json](https://bnbagent-api.bnbchain.world/v1/deliverables/sha256/7a5646139eefd148676d12a1e59c9f9e02a4c378cb9f235b74ede4808df251e5.json) |
+| **Grid first deployed** | 2026-09-03 (BNB Agent Studio trial); re-registered on AWS AgentCore 2026-09-07 |
 
 ## Verification evidence
 
@@ -81,7 +84,7 @@ Server entry: [`app/api/activate/route.ts`](./app/api/activate/route.ts) → [`l
 
 ## Data sources
 
-Every displayed metric is represented with a `DataSource` object. Demo listings are labelled Demo data; the live listing uses the Studio endpoint and on-chain ERC-8183 rail for hire.
+Every displayed metric is represented with a `DataSource` object. Demo listings are labelled Demo data; live listings use the AgentCore endpoint and on-chain ERC-8183 rail for hire. Card metrics are still demo-sourced until onchain history is wired.
 
 - **ERC-8004 Identity Registry:** agent ID, owner, wallet, registration time.
 - **ERC-8004 Reputation Registry:** feedback count, score, validations.
@@ -92,27 +95,30 @@ The adapter boundary is [`lib/chain/`](./lib/chain/). Registry entries are maint
 
 ## Current marketplace manifest
 
-One **live** listing plus seven **demo** listings. Manifest IDs are marketplace IDs; only `grid-bnb-usdt` has a recorded ERC-8004 `agent_id`.
+Four **live** listings plus seven **demo** listings. Manifest IDs are marketplace IDs. Live rows also record an ERC-8004 `agent_id`.
 
 | Agent | Category | Protocol | Manifest ID | Status |
 | --- | --- | --- | --- | --- |
-| Grid BNB / USDT | Grid Trading | PancakeSwap | `grid-bnb-usdt` | **Live** (ERC-8004 `2066`, BSC testnet) |
+| Grid BNB / USDT | Grid Trading | PancakeSwap | `grid-bnb-usdt` | **Live** (ERC-8004 `2066`) |
+| Rebalancing PCS v3 | Rebalancing | PancakeSwap v3 | `rebalancing-pcs-v3` | **Live** (ERC-8004 `2207`) |
+| HF Guard Venus | Health Factor | Venus | `hf-guard-venus` | **Live** (ERC-8004 `2208`) |
+| Yield Stable Router | Yield Optimisation | Venus / Lista | `yield-stable-router` | **Live** (ERC-8004 `2209`) |
 | Grid Alpha v2 | Grid Trading | Thena | `grid-alpha-v2` | Demo — not deployed |
 | LP Range Keeper | Rebalancing | PancakeSwap v3 | `lp-range-keeper` | Demo — not deployed |
 | Range Pilot | Rebalancing | PancakeSwap v3 | `range-pilot` | Demo — not deployed |
 | Stable Router | Yield Optimisation | Venus / Lista | `stable-router` | Demo — not deployed |
 | Yield Scout | Yield Optimisation | Lista | `yield-scout` | Demo — not deployed |
-| Venus Guardian | Health Factor | Venus | `venus-guardian` | Demo — scaffold ready, deploy blocked (BNB trial expired) |
+| Venus Guardian | Health Factor | Venus | `venus-guardian` | Demo — not deployed |
 | HF Sentinel | Health Factor | Lista Lending | `hf-sentinel` | Demo — not deployed |
 
 Agent Studio deployment slots live under [`agents/`](./agents/).
 
 | Deployment slot | Category | Protocol | Status |
 | --- | --- | --- | --- |
-| `grid-bnb-usdt` | Grid Trading | PancakeSwap | **Live (trial)** |
-| `hf-guard-venus` | Health Factor Monitoring | Venus | Scaffold ready — **not live** (BNB trial expired 2026-09-05) |
-| `yield-stable-router` | Yield Optimisation | Venus / Lista | Planned |
-| `rebalancing-pcs-v3` | Rebalancing | PancakeSwap v3 | Planned |
+| `grid-bnb-usdt` | Grid Trading | PancakeSwap | **Live** — ERC-8004 `2066`, AgentCore `gridbnbusdt-bohsdVE5Pv` |
+| `rebalancing-pcs-v3` | Rebalancing | PancakeSwap v3 | **Live** — ERC-8004 `2207`, AgentCore `rebalancingpcsv3-P5Q200A9kZ` |
+| `hf-guard-venus` | Health Factor Monitoring | Venus | **Live** — ERC-8004 `2208`, AgentCore `hfguardvenus-sG614z4iLZ` |
+| `yield-stable-router` | Yield Optimisation | Venus / Lista | **Live** — ERC-8004 `2209`, AgentCore `yieldstablerouter-FscO4qDKDv` |
 
 ## Run locally
 
@@ -139,13 +145,12 @@ Next.js 15 (App Router) · TypeScript · `viem` + `wagmi` · TanStack Query · B
 - [x] UI prototype with four equal categories, cards, detail and activation flow.
 - [x] Mock data adapter with eight listings and explicit source metadata.
 - [x] Category, detail, compare and My agents route skeletons.
-- [x] Deploy `grid-bnb-usdt` on BNB Agent Studio (BSC testnet trial); `hf-guard-venus` scaffolded, **not live** (trial expired 2026-09-05; AWS targets empty).
+- [x] Deploy four sellers on AWS AgentCore: `grid-bnb-usdt` (`2066`), `rebalancing-pcs-v3` (`2207`), `hf-guard-venus` (`2208`), `yield-stable-router` (`2209`).
 - [x] Marketplace ERC-8183 buyer path: negotiate → fund → notify_funded → poll `SUBMITTED`.
-- [x] End-to-end hire verification on BSC testnet (job `963` `SUBMITTED`, deliverable fetched; not settled).
+- [x] End-to-end hire verification on BSC testnet (job `963` `SUBMITTED` on `grid-bnb-usdt`, deliverable fetched; not settled).
 - [ ] Read ERC-8004 identity and reputation from BSC for live listings.
 - [ ] Compute category metrics from onchain transaction history.
 - [ ] x402 / B402 activation (credentials not ready; ERC-8183 is the live rail).
-- [ ] Deploy `yield-stable-router` and `rebalancing-pcs-v3`.
 - [x] Capture the three-task Agent Advantage Report (Task 1 Complete / job 963; Tasks 2–3 public-data checks).
 
 ## Hackathon

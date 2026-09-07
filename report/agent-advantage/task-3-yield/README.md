@@ -2,7 +2,7 @@
 
 - 领域：DeFi
 - 日期：2026-09-04
-- 使用的 Agent：未使用 `grid-bnb-usdt`。Agent 侧 = Venus API + DefiLlama `yields.llama.fi` 实时拉取。人工侧 = 打开同一数据源做对照记录。
+- 使用的 Agent：公开数据对照未走 ERC-8183。专用 seller `yield-stable-router` 现已 **live**（ERC-8004 `2209`，wallet [`0xec2edaf39738Fd92B095dD1c8d10B39074f1B0bE`](https://testnet.bscscan.com/address/0xec2edaf39738Fd92B095dD1c8d10B39074f1B0bE)，runtime `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/yieldstablerouter-FscO4qDKDv`）。`tools.ts` 只有 Venus `supplyRatePerBlock` / `borrowRatePerBlock` 与 ERC-20 `symbol` / `decimals`，没有 Lista 合约 view。下表仍是 2026-09-04 Venus API + DefiLlama 快照，不是该 runtime 的 hire deliverable。
 - 任务描述：比较 BSC 上 **USDT** 在 Venus 核心池与 Lista Lending 的供应收益。用 TVL 最大的 Lista USDT 池当主对照，避免拿 1.5 万 TVL 的高 APY 池当「Lista 官方利率」。
 
 ## 人工完成
