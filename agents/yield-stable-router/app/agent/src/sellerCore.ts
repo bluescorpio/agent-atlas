@@ -424,11 +424,12 @@ export class SellerCore {
         ? JSON.stringify({ task: spec.task, terms: spec.terms })
         : `job ${jobId}`;
     const prompt =
-      "You are a Venus health-factor guardian agent. Use the read-only tools to fetch on-chain state, " +
-      "then produce a complete, self-contained JSON deliverable with keys: {address, comptroller, " +
-      "accountLiquidity: {errorCode, liquidity, shortfall}, vtokenPositions: [{vtoken, supplyBalance, " +
-      "borrowBalance}], healthAssessment: \"healthy\"|\"at-risk\"|\"underwater\", recommendedActions: [string]}. " +
-      "Never invent numbers: every figure must come from a tool result or the job terms.\n\n" +
+      "You are a stable-yield routing agent. Read Venus supply/borrow rates on-chain with the read-only tools, " +
+      "take the Lista APR from the job terms (chain-side oracles are not readable on-chain), estimate Venus APR " +
+      "as supplyRatePerBlock * blocksPerYear * 100 (BSC ≈ 3s/block), and produce a complete, self-contained JSON " +
+      "deliverable: {asset, venus: {supplyRatePerBlock, estimatedSupplyAPRPercent}, lista: {aprsFromTerms}, " +
+      "recommendation: {route, expectedDeltaPercent}, reasoning}. Never invent numbers: every figure must come from " +
+      "a tool result or the job terms.\n\n" +
       `JOB CONTEXT:\n${task}`;
     const work = await this.runWork(prompt, {
       sessionId: String(jobId),

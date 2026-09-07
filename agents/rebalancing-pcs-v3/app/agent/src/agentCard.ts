@@ -107,7 +107,7 @@ export function buildAgentCard(
   }
   return {
     name,
-    description: "Venus health-factor guardian — ERC-8183 seller agent (negotiate + notify_funded over A2A).",
+    description: "PancakeSwap V3 range rebalancer — ERC-8183 seller agent (negotiate + notify_funded over A2A).",
     // main.ts overwrites this with $AGENTCORE_RUNTIME_URL at boot.
     // Local-dev fallback: a client-routable localhost URL (not the 0.0.0.0
     // bind address). Host via AGENT_HOST (default localhost); port via the

@@ -1,8 +1,8 @@
 {
-  "name": "hfguardvenus-agent",
+  "name": "rebalancingpcsv3-agent",
   "version": "0.1.0",
   "private": true,
-  "description": "The hfguardvenus Agent (sole signer, value layer).",
+  "description": "The rebalancingpcsv3 Agent (sole signer, value layer).",
   "type": "module",
   "engines": {
     "node": ">=22"

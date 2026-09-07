@@ -155,44 +155,40 @@ export const LLM_READ_TOOLS: ToolSet = {
   // wallet_list: ...          // multi-wallet management — dev concern
   // wallet_address: ...       // alias of wallet_info
 
-  venus_account_liquidity: tool({
-    description:
-      "Venus health check: Comptroller.getAccountLiquidity(account) returns [errorCode, liquidity, shortfall] in wei. Healthy = liquidity > 0 and shortfall = 0.",
-    inputSchema: z.object({
-      comptroller: z.string().describe("Venus Comptroller contract address (from the job terms)"),
-      account: z.string().describe("wallet address to evaluate"),
-      network: networkArg,
-    }),
-    execute: async ({ comptroller, account, network }) =>
-      cr.contractCallView(comptroller, "getAccountLiquidity(address)", [account], ["uint256", "uint256", "uint256"], network ?? defaultNetwork()),
-  }),
-  venus_vtoken_balance: tool({
-    description: "vToken.balanceOf(account) — the account's supply position in this Venus market.",
-    inputSchema: z.object({
-      vtoken: z.string().describe("vToken contract address"),
-      account: z.string().describe("wallet address"),
-      network: networkArg,
-    }),
-    execute: async ({ vtoken, account, network }) =>
-      cr.contractCallView(vtoken, "balanceOf(address)", [account], ["uint256"], network ?? defaultNetwork()),
-  }),
-  venus_borrow_balance: tool({
-    description: "vToken.borrowBalanceStored(account) — the account's current borrow (principal + interest).",
-    inputSchema: z.object({
-      vtoken: z.string().describe("vToken contract address"),
-      account: z.string().describe("wallet address"),
-      network: networkArg,
-    }),
-    execute: async ({ vtoken, account, network }) =>
-      cr.contractCallView(vtoken, "borrowBalanceStored(address)", [account], ["uint256"], network ?? defaultNetwork()),
-  }),
   venus_market_supply_rate: tool({
     description: "vToken.supplyRatePerBlock() — Venus per-block supply rate (BSC ≈ 3s/block; APR ≈ rate * blocksPerYear * 100).",
     inputSchema: z.object({
-      vtoken: z.string().describe("vToken contract address"),
+      vtoken: z.string().describe("vToken contract address (Venus market for the asset)"),
       network: networkArg,
     }),
     execute: async ({ vtoken, network }) =>
       cr.contractCallView(vtoken, "supplyRatePerBlock()", [], ["uint256"], network ?? defaultNetwork()),
+  }),
+  venus_market_borrow_rate: tool({
+    description: "vToken.borrowRatePerBlock() — Venus per-block borrow rate.",
+    inputSchema: z.object({
+      vtoken: z.string().describe("vToken contract address (Venus market for the asset)"),
+      network: networkArg,
+    }),
+    execute: async ({ vtoken, network }) =>
+      cr.contractCallView(vtoken, "borrowRatePerBlock()", [], ["uint256"], network ?? defaultNetwork()),
+  }),
+  token_symbol: tool({
+    description: "ERC-20 symbol() of any token contract.",
+    inputSchema: z.object({
+      token: z.string().describe("token contract address"),
+      network: networkArg,
+    }),
+    execute: async ({ token, network }) =>
+      cr.contractCallView(token, "symbol()", [], ["string"], network ?? defaultNetwork()),
+  }),
+  token_decimals: tool({
+    description: "ERC-20 decimals() of any token contract.",
+    inputSchema: z.object({
+      token: z.string().describe("token contract address"),
+      network: networkArg,
+    }),
+    execute: async ({ token, network }) =>
+      cr.contractCallView(token, "decimals()", [], ["uint8"], network ?? defaultNetwork()),
   }),
 };

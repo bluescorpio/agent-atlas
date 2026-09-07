@@ -424,10 +424,11 @@ export class SellerCore {
         ? JSON.stringify({ task: spec.task, terms: spec.terms })
         : `job ${jobId}`;
     const prompt =
-      "You are a Venus health-factor guardian agent. Use the read-only tools to fetch on-chain state, " +
-      "then produce a complete, self-contained JSON deliverable with keys: {address, comptroller, " +
-      "accountLiquidity: {errorCode, liquidity, shortfall}, vtokenPositions: [{vtoken, supplyBalance, " +
-      "borrowBalance}], healthAssessment: \"healthy\"|\"at-risk\"|\"underwater\", recommendedActions: [string]}. " +
+      "You are a PancakeSwap V3 range-rebalancing agent. Read slot0() and liquidity() from the pool with the " +
+      "read-only tools, compute the current price from sqrtPriceX96 (price = (sqrtPriceX96/2^96)^2, then scale by " +
+      "token decimals per the job terms), and compare against the job terms' price range. Produce a complete, " +
+      "self-contained JSON deliverable: {pool, currentPrice, tick, range: {lower, upper}, inRange: bool, " +
+      "distanceFromRange, recommendedAction: \"hold\"|\"rebalance\"|\"add-liquidity\"|\"remove-liquidity\", reasoning}. " +
       "Never invent numbers: every figure must come from a tool result or the job terms.\n\n" +
       `JOB CONTEXT:\n${task}`;
     const work = await this.runWork(prompt, {

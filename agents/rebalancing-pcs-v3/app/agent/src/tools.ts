@@ -155,44 +155,41 @@ export const LLM_READ_TOOLS: ToolSet = {
   // wallet_list: ...          // multi-wallet management — dev concern
   // wallet_address: ...       // alias of wallet_info
 
-  venus_account_liquidity: tool({
+  v3_pool_slot0: tool({
     description:
-      "Venus health check: Comptroller.getAccountLiquidity(account) returns [errorCode, liquidity, shortfall] in wei. Healthy = liquidity > 0 and shortfall = 0.",
+      "PancakeSwap V3 pool.slot0() returns [sqrtPriceX96, tick, observationIndex, observationCardinality, observationCardinalityNext, feeProtocol, unlocked]. price = (sqrtPriceX96/2^96)^2, scaled by token decimals.",
     inputSchema: z.object({
-      comptroller: z.string().describe("Venus Comptroller contract address (from the job terms)"),
-      account: z.string().describe("wallet address to evaluate"),
+      pool: z.string().describe("PancakeSwap V3 pool contract address"),
       network: networkArg,
     }),
-    execute: async ({ comptroller, account, network }) =>
-      cr.contractCallView(comptroller, "getAccountLiquidity(address)", [account], ["uint256", "uint256", "uint256"], network ?? defaultNetwork()),
+    execute: async ({ pool, network }) =>
+      cr.contractCallView(pool, "slot0()", [], ["uint160", "int24", "uint16", "uint16", "uint16", "uint8", "bool"], network ?? defaultNetwork()),
   }),
-  venus_vtoken_balance: tool({
-    description: "vToken.balanceOf(account) — the account's supply position in this Venus market.",
+  v3_pool_liquidity: tool({
+    description: "PancakeSwap V3 pool.liquidity() — current in-range liquidity (uint128).",
     inputSchema: z.object({
-      vtoken: z.string().describe("vToken contract address"),
-      account: z.string().describe("wallet address"),
+      pool: z.string().describe("PancakeSwap V3 pool contract address"),
       network: networkArg,
     }),
-    execute: async ({ vtoken, account, network }) =>
-      cr.contractCallView(vtoken, "balanceOf(address)", [account], ["uint256"], network ?? defaultNetwork()),
+    execute: async ({ pool, network }) =>
+      cr.contractCallView(pool, "liquidity()", [], ["uint128"], network ?? defaultNetwork()),
   }),
-  venus_borrow_balance: tool({
-    description: "vToken.borrowBalanceStored(account) — the account's current borrow (principal + interest).",
+  v3_pool_token0: tool({
+    description: "PancakeSwap V3 pool.token0() — token0 contract address (quote direction base).",
     inputSchema: z.object({
-      vtoken: z.string().describe("vToken contract address"),
-      account: z.string().describe("wallet address"),
+      pool: z.string().describe("PancakeSwap V3 pool contract address"),
       network: networkArg,
     }),
-    execute: async ({ vtoken, account, network }) =>
-      cr.contractCallView(vtoken, "borrowBalanceStored(address)", [account], ["uint256"], network ?? defaultNetwork()),
+    execute: async ({ pool, network }) =>
+      cr.contractCallView(pool, "token0()", [], ["address"], network ?? defaultNetwork()),
   }),
-  venus_market_supply_rate: tool({
-    description: "vToken.supplyRatePerBlock() — Venus per-block supply rate (BSC ≈ 3s/block; APR ≈ rate * blocksPerYear * 100).",
+  v3_pool_token1: tool({
+    description: "PancakeSwap V3 pool.token1() — token1 contract address.",
     inputSchema: z.object({
-      vtoken: z.string().describe("vToken contract address"),
+      pool: z.string().describe("PancakeSwap V3 pool contract address"),
       network: networkArg,
     }),
-    execute: async ({ vtoken, network }) =>
-      cr.contractCallView(vtoken, "supplyRatePerBlock()", [], ["uint256"], network ?? defaultNetwork()),
+    execute: async ({ pool, network }) =>
+      cr.contractCallView(pool, "token1()", [], ["address"], network ?? defaultNetwork()),
   }),
 };

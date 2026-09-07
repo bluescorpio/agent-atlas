@@ -1,5 +1,5 @@
 [project]
-name = "hfguardvenus-agent"
+name = "rebalancingpcsv3-agent"
 
 [stack]
 # Project-lifetime facts: which runtime adapter recipe this Agent was
