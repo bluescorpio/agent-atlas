@@ -136,6 +136,20 @@ test('buildTaskFromParams uses gridCount/lowerPrice/upperPrice/budgetCap', () =>
   );
 });
 
+test('buildTaskFromParams uses borrower/protocol/hfThreshold for health-factor hires', () => {
+  assert.equal(
+    buildTaskFromParams(
+      {
+        borrower: '0x1111111111111111111111111111111111111111',
+        protocol: 'Venus',
+        hfThreshold: '1.5',
+      },
+      'fallback',
+    ),
+    'Check Venus health factor for 0x1111111111111111111111111111111111111111 (threshold 1.5)',
+  );
+});
+
 test('activateWithErc8183 runs createJob → registerJob → setBudget → fund → notify → poll', async () => {
   const envelope = loadReportEnvelope();
   const calls: string[] = [];

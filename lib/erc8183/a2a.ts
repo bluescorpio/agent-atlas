@@ -22,11 +22,37 @@ export function a2aInvokeUrl(endpoint: string): string {
   return trimmed.replace(/\/\.well-known\/agent-card\.json$/i, '');
 }
 
+export function runtimeIdFromEndpoint(endpoint: string): string | null {
+  return endpoint.match(/\/v1\/rt\/([^/]+)/i)?.[1] ?? null;
+}
+
 export function oauthScopeForEndpoint(endpoint: string): string {
+  const runtimeId = runtimeIdFromEndpoint(endpoint);
+  if (runtimeId) {
+    const perRuntime = process.env[`AGENT_OAUTH_SCOPE_${runtimeId}`];
+    if (perRuntime) return perRuntime;
+  }
   const fromEnv = process.env.AGENT_OAUTH_SCOPE || process.env.ERC8183_OAUTH_SCOPE;
+  if (fromEnv && runtimeId && fromEnv === `invoke:${runtimeId}`) return fromEnv;
+  if (runtimeId) return `invoke:${runtimeId}`;
   if (fromEnv) return fromEnv;
-  const runtimeId = endpoint.match(/\/v1\/rt\/([^/]+)/i)?.[1] ?? GRID_RUNTIME_ID;
-  return `invoke:${runtimeId}`;
+  return `invoke:${GRID_RUNTIME_ID}`;
+}
+
+function oauthClient(endpoint: string): { id: string; secret: string } {
+  const runtimeId = runtimeIdFromEndpoint(endpoint);
+  const id =
+    (runtimeId && process.env[`AGENT_CLIENT_ID_${runtimeId}`]) ||
+    process.env.AGENT_CLIENT_ID ||
+    process.env.ERC8183_OAUTH_CLIENT_ID;
+  const secret =
+    (runtimeId && process.env[`AGENT_CLIENT_SECRET_${runtimeId}`]) ||
+    process.env.AGENT_CLIENT_SECRET ||
+    process.env.ERC8183_OAUTH_CLIENT_SECRET;
+  if (!id || !secret) {
+    throw new Error('A2A_OAUTH_REQUIRED: set AGENT_CLIENT_ID and AGENT_CLIENT_SECRET');
+  }
+  return { id, secret };
 }
 
 async function bearerToken(endpoint: string, fetchImpl: typeof fetch): Promise<string> {
@@ -35,11 +61,7 @@ async function bearerToken(endpoint: string, fetchImpl: typeof fetch): Promise<s
     process.env.AGENT_OAUTH_TOKEN_URL ||
     process.env.ERC8183_OAUTH_TOKEN_URL ||
     BNBAGENT_OAUTH_TOKEN_URL;
-  const clientId = process.env.AGENT_CLIENT_ID || process.env.ERC8183_OAUTH_CLIENT_ID;
-  const clientSecret = process.env.AGENT_CLIENT_SECRET || process.env.ERC8183_OAUTH_CLIENT_SECRET;
-  if (!clientId || !clientSecret) {
-    throw new Error('A2A_OAUTH_REQUIRED: set AGENT_CLIENT_ID and AGENT_CLIENT_SECRET');
-  }
+  const { id: clientId, secret: clientSecret } = oauthClient(endpoint);
   const body = new URLSearchParams({
     grant_type: 'client_credentials',
     client_id: clientId,

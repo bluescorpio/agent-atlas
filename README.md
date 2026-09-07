@@ -102,7 +102,7 @@ One **live** listing plus seven **demo** listings. Manifest IDs are marketplace 
 | Range Pilot | Rebalancing | PancakeSwap v3 | `range-pilot` | Demo — not deployed |
 | Stable Router | Yield Optimisation | Venus / Lista | `stable-router` | Demo — not deployed |
 | Yield Scout | Yield Optimisation | Lista | `yield-scout` | Demo — not deployed |
-| Venus Guardian | Health Factor | Venus | `venus-guardian` | Demo — not deployed |
+| Venus Guardian | Health Factor | Venus | `venus-guardian` | Demo — scaffold ready, deploy blocked (BNB trial expired) |
 | HF Sentinel | Health Factor | Lista Lending | `hf-sentinel` | Demo — not deployed |
 
 Agent Studio deployment slots live under [`agents/`](./agents/).
@@ -110,7 +110,7 @@ Agent Studio deployment slots live under [`agents/`](./agents/).
 | Deployment slot | Category | Protocol | Status |
 | --- | --- | --- | --- |
 | `grid-bnb-usdt` | Grid Trading | PancakeSwap | **Live (trial)** |
-| `hf-guard-venus` | Health Factor Monitoring | Venus | Planned |
+| `hf-guard-venus` | Health Factor Monitoring | Venus | Scaffold ready — **not live** (BNB trial expired 2026-09-05) |
 | `yield-stable-router` | Yield Optimisation | Venus / Lista | Planned |
 | `rebalancing-pcs-v3` | Rebalancing | PancakeSwap v3 | Planned |
 
@@ -139,7 +139,7 @@ Next.js 15 (App Router) · TypeScript · `viem` + `wagmi` · TanStack Query · B
 - [x] UI prototype with four equal categories, cards, detail and activation flow.
 - [x] Mock data adapter with eight listings and explicit source metadata.
 - [x] Category, detail, compare and My agents route skeletons.
-- [x] Deploy `grid-bnb-usdt` on BNB Agent Studio (BSC testnet trial); `hf-guard-venus` still Planned.
+- [x] Deploy `grid-bnb-usdt` on BNB Agent Studio (BSC testnet trial); `hf-guard-venus` scaffolded, **not live** (trial expired 2026-09-05; AWS targets empty).
 - [x] Marketplace ERC-8183 buyer path: negotiate → fund → notify_funded → poll `SUBMITTED`.
 - [x] End-to-end hire verification on BSC testnet (job `963` `SUBMITTED`, deliverable fetched; not settled).
 - [ ] Read ERC-8004 identity and reputation from BSC for live listings.

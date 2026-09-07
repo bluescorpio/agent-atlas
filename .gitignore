@@ -11,3 +11,4 @@ agents/gridbnbusdt/
 # Encrypted keystores + studio local secrets (never commit)
 **/.studio/
 agents/**/.studio/
+.pnpm-store/

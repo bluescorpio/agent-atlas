@@ -25,6 +25,7 @@ type Agent = {
   score: string;
   source: 'live' | 'demo';
   wallet?: string;
+  erc8004Id?: number;
 };
 
 /** Keep listing metadata aligned with `lib/registry.json`. Metrics remain demo until onchain history lands. */
@@ -44,13 +45,14 @@ const agents: Agent[] = [
     score: '4.9',
     source: 'live',
     wallet: '0x3573e861363880f18F357Ca8258FA1393573d676',
+    erc8004Id: 2066,
   },
   { id: 'grid-alpha-v2', name: 'Grid Alpha v2', category: 'Grid Trading', protocol: 'Thena', online: true, price: '7.00', unit: 'USDT per task', description: 'Adaptive grid that widens spacing as volatility expands.', metrics: ['72.1% win rate', '30 day window', '−11.4% max drawdown'], accent: '#e2b75c', icon: '◫', score: '4.7', source: 'demo' },
   { id: 'lp-range-keeper', name: 'LP Range Keeper', category: 'Rebalancing', protocol: 'PancakeSwap v3', online: true, price: '12', unit: 'USDT monthly', description: 'Keeps your concentrated liquidity in range and resets when price exits.', metrics: ['91.6% in-range', '14 resets', ' $184K TVL'], accent: '#8ac6a7', icon: '⌁', score: '4.8', source: 'demo' },
   { id: 'range-pilot', name: 'Range Pilot', category: 'Rebalancing', protocol: 'PancakeSwap v3', online: false, price: '8', unit: 'USDT monthly', description: 'A conservative range manager tuned for lower gas and fewer resets.', metrics: ['87.3% in-range', '9 resets', ' $96K TVL'], accent: '#8ac6a7', icon: '◌', score: '4.6', source: 'demo' },
   { id: 'stable-router', name: 'Stable Router', category: 'Yield Optimisation', protocol: 'Venus · Lista', online: true, price: '9', unit: 'USDT monthly', description: 'Routes stablecoin liquidity to the highest realised APR across trusted venues.', metrics: ['14.8% actual APR', '6 migrations', ' $1.2M managed'], accent: '#9eb8e8', icon: '↗', score: '4.9', source: 'demo' },
   { id: 'yield-scout', name: 'Yield Scout', category: 'Yield Optimisation', protocol: 'Lista', online: true, price: '5.00', unit: 'USDT per task', description: 'Scans lending markets for spread and moves only when the edge clears gas.', metrics: ['12.6% actual APR', '3 migrations', ' $420K managed'], accent: '#9eb8e8', icon: '⌘', score: '4.5', source: 'demo' },
-  { id: 'venus-guardian', name: 'Venus Guardian', category: 'Health Factor', protocol: 'Venus', online: true, price: '15', unit: 'USDT monthly', description: 'Monitors your borrow position and repays or adds collateral before liquidation.', metrics: ['24 positions guarded', '7 liquidations prevented', '420ms response'], accent: '#e79b88', icon: '✦', score: '4.9', source: 'demo' },
+  { id: 'venus-guardian', name: 'Venus Guardian', category: 'Health Factor', protocol: 'Venus', online: true, price: '0.10', unit: 'U per task', description: 'Read-only Venus health check: borrower address in, spoken conclusion + JSON out. Does not repay or add collateral.', metrics: ['24 positions guarded', '7 liquidations prevented', '420ms response'], accent: '#e79b88', icon: '✦', score: '4.9', source: 'demo' },
   { id: 'hf-sentinel', name: 'HF Sentinel', category: 'Health Factor', protocol: 'Lista Lending', online: true, price: '10', unit: 'USDT monthly', description: 'A lightweight health factor watcher with configurable alert thresholds.', metrics: ['11 positions guarded', '4 liquidations prevented', '680ms response'], accent: '#e79b88', icon: '◈', score: '4.7', source: 'demo' },
 ];
 
@@ -354,7 +356,7 @@ export default function Home() {
           <div className="empty">
             <div>✦</div>
             <p>No active agents yet.</p>
-            <span>Hire the live Grid BNB / USDT agent to see it here.</span>
+            <span>Hire a live listing (Grid or Venus Guardian) to see it here.</span>
           </div>
         ) : (
           <div className="active-list">
@@ -416,7 +418,7 @@ export default function Home() {
             </div>
             <div className="identity">
               <h4>ERC-8004 IDENTITY</h4>
-              <code>{detail.source === 'live' ? 'ERC-8004 agent_id 2066 · marketplace id grid-bnb-usdt' : `demo://${detail.id}`}</code>
+              <code>{detail.source === 'live' ? `ERC-8004 agent_id ${detail.erc8004Id ?? 'pending'} · marketplace id ${detail.id}` : `demo://${detail.id}`}</code>
               {detail.wallet ? (
                 <a href={`https://bscscan.com/address/${detail.wallet}`} target="_blank" rel="noreferrer">
                   Wallet on BscScan <ExternalLink size={12} />

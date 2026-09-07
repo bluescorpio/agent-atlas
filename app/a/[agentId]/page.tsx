@@ -33,7 +33,7 @@ export default async function AgentPage({ params }: { params: Promise<{ agentId:
           <h3>ERC-8004 IDENTITY</h3>
           {agent.source === 'live' ? (
             <>
-              <code>ERC-8004 agent_id 2066</code>
+              <code>{agent.identity.erc8004Id != null ? `ERC-8004 agent_id ${agent.identity.erc8004Id}` : 'ERC-8004 agent_id pending'}</code>
               <code>marketplace id {agent.identity.agentId}</code>
               <code>{agent.identity.wallet}</code>
               {agent.identity.endpoint && <code>{agent.identity.endpoint}</code>}

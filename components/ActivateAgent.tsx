@@ -24,10 +24,17 @@ type Result = {
   nextStep?: string;
 };
 
-const DEFAULT_PARAMS = {
+const GRID_DEFAULT_PARAMS = {
   gridCount: '10',
   lowerPrice: '500',
   upperPrice: '600',
+  budgetCap: '0.1',
+};
+
+const HEALTH_DEFAULT_PARAMS = {
+  borrower: '',
+  protocol: 'Venus',
+  hfThreshold: '1.2',
   budgetCap: '0.1',
 };
 
@@ -38,7 +45,9 @@ export default function ActivateAgent({ agentId, name, category, online, live = 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<Result | null>(null);
-  const [params, setParams] = useState<Record<string, string>>(DEFAULT_PARAMS);
+  const [params, setParams] = useState<Record<string, string>>(
+    category === 'health_factor' ? HEALTH_DEFAULT_PARAMS : GRID_DEFAULT_PARAMS,
+  );
 
   const canActivate = online && live;
 
@@ -59,10 +68,20 @@ export default function ActivateAgent({ agentId, name, category, online, live = 
   const setField = (key: string, value: string) => setParams((prev) => ({ ...prev, [key]: value }));
 
   function validateParams(): string | null {
-    if (category !== 'grid_trading') return null;
-    if (!params.gridCount || Number(params.gridCount) <= 0) return 'gridCount is required';
-    if (!params.lowerPrice || !params.upperPrice) return 'lowerPrice and upperPrice are required';
-    if (Number(params.lowerPrice) >= Number(params.upperPrice)) return 'lowerPrice must be below upperPrice';
+    if (category === 'grid_trading') {
+      if (!params.gridCount || Number(params.gridCount) <= 0) return 'gridCount is required';
+      if (!params.lowerPrice || !params.upperPrice) return 'lowerPrice and upperPrice are required';
+      if (Number(params.lowerPrice) >= Number(params.upperPrice)) return 'lowerPrice must be below upperPrice';
+      if (!params.budgetCap) return 'budgetCap is required';
+      return null;
+    }
+    if (category === 'health_factor') {
+      if (!params.borrower || !/^0x[a-fA-F0-9]{40}$/.test(params.borrower.trim())) {
+        return 'borrower address (0x…) is required';
+      }
+      if (params.hfThreshold && !(Number(params.hfThreshold) > 0)) return 'hfThreshold must be a positive number';
+      return null;
+    }
     if (!params.budgetCap) return 'budgetCap is required';
     return null;
   }
@@ -164,6 +183,26 @@ export default function ActivateAgent({ agentId, name, category, online, live = 
                       </div>
                     </label>
                   </>
+                ) : category === 'health_factor' ? (
+                  <>
+                    <label>borrower <span>Required</span>
+                      <div className="input-wrap">
+                        <input placeholder="0x…" value={params.borrower} onChange={(e) => setField('borrower', e.target.value)} />
+                        <b>addr</b>
+                      </div>
+                    </label>
+                    <label>protocol
+                      <div className="input-wrap">
+                        <input placeholder="Venus" value={params.protocol} onChange={(e) => setField('protocol', e.target.value)} />
+                      </div>
+                    </label>
+                    <label>hfThreshold
+                      <div className="input-wrap">
+                        <input placeholder="1.2" value={params.hfThreshold} onChange={(e) => setField('hfThreshold', e.target.value)} />
+                      </div>
+                    </label>
+                    <p className="fine">Read-only Venus check. The agent will not repay or add collateral.</p>
+                  </>
                 ) : (
                   <label>budgetCap <span>Required</span>
                     <div className="input-wrap">
@@ -190,7 +229,9 @@ export default function ActivateAgent({ agentId, name, category, online, live = 
                   <strong>{agentId}</strong>
                   <span className="muted-text">negotiate → fund on-chain → notify_funded → poll SUBMITTED</span>
                   <small>
-                    {params.gridCount} levels · {params.lowerPrice}–{params.upperPrice} USDT · cap {params.budgetCap} U
+                    {category === 'health_factor'
+                      ? `${params.protocol || 'Venus'} · ${params.borrower || 'no address'} · HF ${params.hfThreshold || '1.2'}`
+                      : `${params.gridCount} levels · ${params.lowerPrice}–${params.upperPrice} USDT · cap ${params.budgetCap} U`}
                   </small>
                 </div>
                 {error && <p className="fine">{error}</p>}

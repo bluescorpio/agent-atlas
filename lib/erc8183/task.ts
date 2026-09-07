@@ -9,5 +9,13 @@ export function buildTaskFromParams(params: Record<string, string>, fallback: st
     const capBit = cap ? `. Capital cap ${cap} U` : '';
     return `Run a BNB/USDT grid with ${gridCount} levels between ${lower} and ${upper} USDT${capBit}`;
   }
+  const borrower = params.borrower || params.borrowerAddress || params.address;
+  const protocol = params.protocol || 'Venus';
+  const threshold = params.hfThreshold || params.hf_threshold || params.threshold;
+  if (borrower || params.protocol || threshold) {
+    const who = borrower?.trim() || 'no address';
+    const hf = threshold?.trim() || '1.2';
+    return `Check ${protocol} health factor for ${who} (threshold ${hf})`;
+  }
   return fallback;
 }

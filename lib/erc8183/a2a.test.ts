@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { sendA2aData } from './a2a';
+import { sendA2aData, oauthScopeForEndpoint } from './a2a';
 
 test('sendA2aData uses form-body client_credentials and a data-part message/send', async () => {
   const calls: { url: string; init: RequestInit }[] = [];
@@ -63,5 +63,23 @@ test('sendA2aData uses form-body client_credentials and a data-part message/send
       if (value === undefined) delete process.env[key];
       else process.env[key] = value;
     }
+  }
+});
+
+test('oauthScopeForEndpoint ignores a global scope that belongs to another runtime', () => {
+  const prev = process.env.AGENT_OAUTH_SCOPE;
+  process.env.AGENT_OAUTH_SCOPE = 'invoke:01M1K4SSXB6VA50K5C6FV6E4JK';
+  try {
+    assert.equal(
+      oauthScopeForEndpoint('https://bnbagent-api.bnbchain.world/v1/rt/01OTHERRUNTIMEID/.well-known/agent-card.json'),
+      'invoke:01OTHERRUNTIMEID',
+    );
+    assert.equal(
+      oauthScopeForEndpoint('https://bnbagent-api.bnbchain.world/v1/rt/01M1K4SSXB6VA50K5C6FV6E4JK/.well-known/agent-card.json'),
+      'invoke:01M1K4SSXB6VA50K5C6FV6E4JK',
+    );
+  } finally {
+    if (prev === undefined) delete process.env.AGENT_OAUTH_SCOPE;
+    else process.env.AGENT_OAUTH_SCOPE = prev;
   }
 });

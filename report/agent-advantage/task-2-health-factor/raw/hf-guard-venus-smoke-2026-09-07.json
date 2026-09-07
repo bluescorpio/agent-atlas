@@ -1,0 +1,52 @@
+{
+  "skill": "venus_health_factor",
+  "protocol": "Venus",
+  "borrower": "0x1111111111111111111111111111111111111111",
+  "hfThreshold": 1.2,
+  "formula": "health_factor ≈ (collateral_value_usd × liquidation_threshold) / borrow_value_usd; HF < 1 is liquidatable. Comptroller.getAccountLiquidity returns excess liquidity XOR shortfall in USD (1e18).",
+  "disclaimer": "Read-only. Does not repay debt or add collateral. API rows can lag the chain.",
+  "markets": [
+    {
+      "symbol": "vUSDT",
+      "address": "0xb7526572FFE56AB9D7489838Bf2E18e3323b441A",
+      "chainId": 97,
+      "pool": "Core Pool",
+      "collateralFactor": "0.75",
+      "liquidationThreshold": "0.8",
+      "supplyApyDecimal": "0.0000000000",
+      "borrowApyDecimal": "0.0000000000"
+    },
+    {
+      "symbol": "vUSDT",
+      "address": "0xfD5840Cd36d94D7229439859C0112a4185BC0255",
+      "chainId": 56,
+      "pool": "Core Pool",
+      "collateralFactor": "0.8",
+      "liquidationThreshold": "0.8",
+      "supplyApyDecimal": "0.0262647405",
+      "borrowApyDecimal": "0.0443224264"
+    }
+  ],
+  "accounts": [
+    {
+      "chainId": 97,
+      "pool": "Core Pool",
+      "comptroller": "0x94d1820b2D1c7c7452A163983Dc888CEC546b77D",
+      "error": "0",
+      "liquidityUsd": "0.000000",
+      "shortfallUsd": "0.000000",
+      "status": "no_position"
+    },
+    {
+      "chainId": 56,
+      "pool": "Core Pool",
+      "comptroller": "0xfD36E2c2a6789Db23113685031d7F16329158384",
+      "error": "0",
+      "liquidityUsd": "0.000000",
+      "shortfallUsd": "0.000000",
+      "status": "no_position"
+    }
+  ],
+  "conclusion": "Address has no entered Venus core-pool markets on the chains that answered. Market-level CF/LT/APY still included.",
+  "fetchedAt": "2026-09-07T02:25:36.028Z"
+}

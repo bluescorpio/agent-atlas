@@ -9,6 +9,19 @@ const DEFAULT_TERMS = {
   evaluator_type: 'uma_oov3',
 };
 
+const HEALTH_FACTOR_TERMS = {
+  deliverables:
+    'spoken Venus health conclusion plus structured JSON (markets CF/LT/APY and Comptroller getAccountLiquidity when an address is given)',
+  quality_standards:
+    'cite live Venus API or RPC; do not fabricate account HF; read-only — no repay or add-collateral',
+  evaluation_required: true,
+  evaluator_type: 'uma_oov3',
+};
+
+function termsFor(agent: AgentListing) {
+  return agent.category === 'health_factor' ? HEALTH_FACTOR_TERMS : DEFAULT_TERMS;
+}
+
 /**
  * A2A `negotiate` against the seller. Data part only.
  * Quote TTL is 15 minutes (`quote_expires_at`); callers re-run this when expired.
@@ -25,7 +38,7 @@ export async function renegotiateQuote(
     {
       skill: 'negotiate',
       task_description: task,
-      terms: DEFAULT_TERMS,
+      terms: termsFor(agent),
     },
     fetchImpl,
   );
