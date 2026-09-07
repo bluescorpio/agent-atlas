@@ -81,9 +81,11 @@ poll_interval_seconds = 30
 auto_settle = false                            # opt-in: detect dispute-window-elapsed → settle
 
 [storage]
-# Deliverables written to local disk (file://). Offline-dev only —
-# does NOT survive deploy. Path from STORAGE_LOCAL_PATH.
-kind = "local"
+kind = "s3"
+bucket = "agent-atlas-deliverables-850122838544"
+region = "us-east-1"
+public_base_url = "https://agent-atlas-deliverables-850122838544.s3.us-east-1.amazonaws.com"
+credential_mode = "ambient"
 
 
 [payments.b402_seller]
