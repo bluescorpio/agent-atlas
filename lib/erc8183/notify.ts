@@ -25,6 +25,7 @@ export async function notifyFunded(
       job_id: Number(jobId),
     },
     fetchImpl,
+    agent.identity.agentId,
   );
   const status = String(data.status ?? '');
   if (status !== 'accepted') {

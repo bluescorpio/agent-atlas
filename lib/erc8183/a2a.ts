@@ -1,5 +1,10 @@
 import { randomUUID } from 'node:crypto';
 import {
+  isAgentCoreEndpoint,
+  resolveAgentCoreAuth,
+  COGNITO_SCOPE,
+} from './agentcore-oauth';
+import {
   BNBAGENT_OAUTH_TOKEN_URL,
   GRID_A2A_INVOKE_URL,
   GRID_RUNTIME_ID,
@@ -14,12 +19,14 @@ function asRecord(value: unknown): Record<string, unknown> | null {
 
 /** Agent-card URL → A2A JSON-RPC invoke URL (`.../v1/rt/<id>/a2a`). */
 export function a2aInvokeUrl(endpoint: string): string {
-  const trimmed = endpoint.trim().replace(/\/+$/, '');
-  if (!trimmed) return GRID_A2A_INVOKE_URL;
-  if (/\/a2a$/i.test(trimmed)) return trimmed;
-  const runtimeBase = trimmed.match(/^(https?:\/\/[^/]+\/v1\/rt\/[^/]+)/i);
+  const trimmed = endpoint.trim();
+  if (isAgentCoreEndpoint(trimmed)) return trimmed;
+  const noSlash = trimmed.replace(/\/+$/, '');
+  if (!noSlash) return GRID_A2A_INVOKE_URL;
+  if (/\/a2a$/i.test(noSlash)) return noSlash;
+  const runtimeBase = noSlash.match(/^(https?:\/\/[^/]+\/v1\/rt\/[^/]+)/i);
   if (runtimeBase) return `${runtimeBase[1]}/a2a`;
-  return trimmed.replace(/\/\.well-known\/agent-card\.json$/i, '');
+  return noSlash.replace(/\/\.well-known\/agent-card\.json$/i, '');
 }
 
 export function runtimeIdFromEndpoint(endpoint: string): string | null {
@@ -27,6 +34,9 @@ export function runtimeIdFromEndpoint(endpoint: string): string | null {
 }
 
 export function oauthScopeForEndpoint(endpoint: string): string {
+  if (isAgentCoreEndpoint(endpoint)) {
+    return COGNITO_SCOPE;
+  }
   const runtimeId = runtimeIdFromEndpoint(endpoint);
   if (runtimeId) {
     const perRuntime = process.env[`AGENT_OAUTH_SCOPE_${runtimeId}`];
@@ -55,18 +65,18 @@ function oauthClient(endpoint: string): { id: string; secret: string } {
   return { id, secret };
 }
 
-async function bearerToken(endpoint: string, fetchImpl: typeof fetch): Promise<string> {
-  if (process.env.ERC8183_A2A_BEARER) return process.env.ERC8183_A2A_BEARER;
-  const tokenUrl =
-    process.env.AGENT_OAUTH_TOKEN_URL ||
-    process.env.ERC8183_OAUTH_TOKEN_URL ||
-    BNBAGENT_OAUTH_TOKEN_URL;
-  const { id: clientId, secret: clientSecret } = oauthClient(endpoint);
+async function fetchClientCredentialsToken(
+  tokenUrl: string,
+  clientId: string,
+  clientSecret: string,
+  scope: string,
+  fetchImpl: typeof fetch,
+): Promise<string> {
   const body = new URLSearchParams({
     grant_type: 'client_credentials',
     client_id: clientId,
     client_secret: clientSecret,
-    scope: oauthScopeForEndpoint(endpoint),
+    scope,
   });
   const response = await fetchImpl(tokenUrl, {
     method: 'POST',
@@ -80,6 +90,38 @@ async function bearerToken(endpoint: string, fetchImpl: typeof fetch): Promise<s
   const json = JSON.parse(text) as { access_token?: string };
   if (!json.access_token) throw new Error('A2A_OAUTH_FAILED: missing access_token');
   return json.access_token;
+}
+
+async function bearerToken(
+  endpoint: string,
+  fetchImpl: typeof fetch,
+  agentId?: string,
+): Promise<{ token: string; sessionId?: string }> {
+  if (isAgentCoreEndpoint(endpoint)) {
+    const auth = resolveAgentCoreAuth(agentId, endpoint);
+    const token = await fetchClientCredentialsToken(
+      auth.tokenUrl,
+      auth.clientId,
+      auth.clientSecret,
+      auth.scope,
+      fetchImpl,
+    );
+    return { token, sessionId: auth.sessionId };
+  }
+  if (process.env.ERC8183_A2A_BEARER) return { token: process.env.ERC8183_A2A_BEARER };
+  const tokenUrl =
+    process.env.AGENT_OAUTH_TOKEN_URL ||
+    process.env.ERC8183_OAUTH_TOKEN_URL ||
+    BNBAGENT_OAUTH_TOKEN_URL;
+  const { id: clientId, secret: clientSecret } = oauthClient(endpoint);
+  const token = await fetchClientCredentialsToken(
+    tokenUrl,
+    clientId,
+    clientSecret,
+    oauthScopeForEndpoint(endpoint),
+    fetchImpl,
+  );
+  return { token };
 }
 
 export function extractA2aDataPart(input: unknown): Record<string, unknown> {
@@ -126,9 +168,10 @@ export async function sendA2aData(
   endpoint: string,
   data: Record<string, unknown>,
   fetchImpl: typeof fetch = fetch,
+  agentId?: string,
 ): Promise<Record<string, unknown>> {
   const url = a2aInvokeUrl(endpoint);
-  const token = await bearerToken(endpoint, fetchImpl);
+  const { token, sessionId } = await bearerToken(endpoint, fetchImpl, agentId);
   const payload = {
     jsonrpc: '2.0',
     id: randomUUID(),
@@ -141,12 +184,16 @@ export async function sendA2aData(
       },
     },
   };
+  const headers: Record<string, string> = {
+    'content-type': 'application/json',
+    authorization: `Bearer ${token}`,
+  };
+  if (sessionId) {
+    headers['X-Amzn-Bedrock-AgentCore-Runtime-Session-Id'] = sessionId;
+  }
   const response = await fetchImpl(url, {
     method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      authorization: `Bearer ${token}`,
-    },
+    headers,
     body: JSON.stringify(payload),
   });
   const text = await response.text();

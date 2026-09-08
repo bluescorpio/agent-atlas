@@ -41,6 +41,7 @@ export async function renegotiateQuote(
       terms: termsFor(agent),
     },
     fetchImpl,
+    agent.identity.agentId,
   );
   return extractNegotiationEnvelope(data);
 }

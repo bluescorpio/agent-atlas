@@ -141,7 +141,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Set `AGENT_CLIENT_ID` / `AGENT_CLIENT_SECRET` and `ERC8183_BUYER_PRIVATE_KEY` (BSC testnet buyer with ≥ 0.1 U + gas) to exercise the live hire path. With only `MOCK_DATA=true`, the UI still browses listings without paying. Production build:
+Set `GRID_A2A_CLIENT_SECRET` / `REBALANCING_A2A_CLIENT_SECRET` / `HF_A2A_CLIENT_SECRET` / `YIELD_A2A_CLIENT_SECRET` (Cognito app client secrets) and `ERC8183_BUYER_PRIVATE_KEY` (BSC testnet buyer with ≥ 0.1 U + gas) to exercise the live hire path. Missing Cognito secrets return HTTP 500 with `A2A_OAUTH_CONFIG`. Do not reuse `AGENT_CLIENT_SECRET` from bnbagent-api — AgentCore JWT `iss` will not match. With only `MOCK_DATA=true`, the UI still browses listings without paying. Production build:
 
 ```bash
 npm run build

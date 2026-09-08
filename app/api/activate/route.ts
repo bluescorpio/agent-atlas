@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { activate } from '../../../lib/x402/activate';
 import { getMockAgent } from '../../../lib/chain/mock';
+import { activateErrorHttpStatus } from '../../../lib/erc8183/agentcore-oauth';
 
 export const runtime = 'nodejs';
 /** Negotiate + 4 chain writes + seller LLM submit can exceed 60s. */
@@ -39,8 +40,11 @@ function nextStepFor(error: string): string {
   if (error === 'WALLET_MISMATCH') {
     return 'Connected wallet must equal the ERC8183_BUYER_PRIVATE_KEY address (BSC testnet buyer with ≥ 0.1 U + gas).';
   }
+  if (error.startsWith('A2A_OAUTH_CONFIG')) {
+    return 'Set the per-agent Cognito secret on the server: GRID_A2A_CLIENT_SECRET, REBALANCING_A2A_CLIENT_SECRET, HF_A2A_CLIENT_SECRET, or YIELD_A2A_CLIENT_SECRET. Do not reuse AGENT_CLIENT_SECRET (that is bnbagent-api, not AgentCore).';
+  }
   if (error === 'ERC8183_BUYER_PRIVATE_KEY_REQUIRED' || error.startsWith('A2A_OAUTH')) {
-    return 'Set AGENT_CLIENT_ID / AGENT_CLIENT_SECRET and ERC8183_BUYER_PRIVATE_KEY on the server (.env.local), then retry.';
+    return 'Set ERC8183_BUYER_PRIVATE_KEY and the per-agent Cognito client secrets on the server (.env.local / Vercel), then retry.';
   }
   return 'Retry the live ERC-8183 path: negotiate → createJob → registerJob → setBudget → fund → notify_funded → poll SUBMITTED. x402/B402 is not enabled.';
 }
@@ -65,7 +69,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'ACTIVATION_FAILED';
-    const status = message === 'DEMO_AGENT_NOT_ACTIVATABLE' ? 409 : 400;
+    const status = activateErrorHttpStatus(message);
     return NextResponse.json({
       error: message,
       nextStep: nextStepFor(message),
