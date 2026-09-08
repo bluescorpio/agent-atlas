@@ -14,3 +14,4 @@ BNB Agent Studio seller. Marketplace listing `yield-stable-router` is **live**. 
 | **ERC-8004** | `2209` |
 | **Wallet** | `0xec2edaf39738Fd92B095dD1c8d10B39074f1B0bE` |
 | **AgentCore runtime** | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/yieldstablerouter-FscO4qDKDv` |
+| **ERC-8183** | job `1121` **FUNDED** (0.1 U escrow). No `deliverable_url` — Pieverse `auto/free` 429. |

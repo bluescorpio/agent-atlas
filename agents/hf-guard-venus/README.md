@@ -17,5 +17,4 @@ BNB Agent Studio seller. Marketplace listing `hf-guard-venus` is **live**. Demo 
 | **Wallet** | `0xaaBd845B763761af98eE516a2a08829AEf548Cf3` |
 | **AgentCore runtime** | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/hfguardvenus-sG614z4iLZ` |
 | **Invoke** | AgentCore `/invocations?qualifier=DEFAULT` (see `lib/registry.json`) |
-
-ERC-8183 hire on this runtime is **not** recorded yet (no `job_id`).
+| **ERC-8183** | job `1120` **FUNDED** (0.1 U escrow). No `deliverable_url` — Pieverse `auto/free` 429. |

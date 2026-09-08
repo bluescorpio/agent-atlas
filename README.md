@@ -1,6 +1,6 @@
 # Agent Atlas
 
-**Status: Four live AgentCore sellers + ERC-8183 hire verified on grid (job 963 SUBMITTED, deliverable fetched).**
+**Status: Four live AgentCore sellers. ERC-8183: job 963 SUBMITTED (grid). Jobs 1115 / 1120 / 1121 FUNDED — deliverables blocked by Pieverse `auto/free` 429.**
 
 **Find, compare and hire DeFi agents on BNB Smart Chain.**
 
@@ -8,9 +8,9 @@ Agent Atlas is a marketplace for ERC-8004 agents on BNB Smart Chain, built for t
 
 - **Repository:** [github.com/bluescorpio/agent-atlas](https://github.com/bluescorpio/agent-atlas)
 - **Local demo:** `http://127.0.0.1:3000`
-- **Agent Advantage Report:** [`report/agent-advantage/`](./report/agent-advantage/) — three-task write-up; Task 1 hire **Complete** ([job 963](https://bnbagent-api.bnbchain.world/v1/deliverables/sha256/7a5646139eefd148676d12a1e59c9f9e02a4c378cb9f235b74ede4808df251e5.json) `SUBMITTED`); Tasks 2–3 still record public-data checks. Four sellers are now live on AWS AgentCore (see below).
+- **Agent Advantage Report:** [`report/agent-advantage/`](./report/agent-advantage/) — three-task write-up; Task 1 hire **Complete** ([job 963](https://bnbagent-api.bnbchain.world/v1/deliverables/sha256/7a5646139eefd148676d12a1e59c9f9e02a4c378cb9f235b74ede4808df251e5.json) `SUBMITTED`). Tasks 2–3 have **live** sellers plus on-chain `FUNDED` jobs (`1120` / `1121`); deliverables are **not** generated yet (Pieverse `auto/free` daily 429).
 
-> **Live + demo mix.** Four Agent Studio sellers (`grid-bnb-usdt`, `rebalancing-pcs-v3`, `hf-guard-venus`, `yield-stable-router`) are deployed on AWS AgentCore with ERC-8004 ids on BSC testnet and labelled **Live**. The other seven marketplace listings remain labelled **Demo — not deployed**. Demo listings refuse activation (`DEMO_AGENT_NOT_ACTIVATABLE`). Verified ERC-8183 hire evidence is still job `963` on `grid-bnb-usdt` only.
+> **Live + demo mix.** Four Agent Studio sellers (`grid-bnb-usdt`, `rebalancing-pcs-v3`, `hf-guard-venus`, `yield-stable-router`) are deployed on AWS AgentCore with ERC-8004 ids on BSC testnet and labelled **Live**. The other seven marketplace listings remain labelled **Demo — not deployed**. Demo listings refuse activation (`DEMO_AGENT_NOT_ACTIVATABLE`). The only **SUBMITTED** hire with a public deliverable is still job `963` on `grid-bnb-usdt`.
 
 ## Why this exists
 
@@ -50,9 +50,20 @@ Four AWS AgentCore runtimes (account `850122838544`, region `us-east-1`). Hire r
 
 Invoke URLs are the AgentCore `/invocations?qualifier=DEFAULT` endpoints recorded in [`lib/registry.json`](./lib/registry.json).
 
-| Field | Grid hire evidence (unchanged) |
+### ERC-8183 hire status (BSC testnet, buyer `0x81122d2Ea08B5c61b899949fc9b9C3735C972414`)
+
+| Agent | job_id | Chain status | Deliverable |
+| --- | --- | --- | --- |
+| `grid-bnb-usdt` | `963` | **SUBMITTED** | [sha256/7a5646…51e5.json](https://bnbagent-api.bnbchain.world/v1/deliverables/sha256/7a5646139eefd148676d12a1e59c9f9e02a4c378cb9f235b74ede4808df251e5.json) |
+| `rebalancing-pcs-v3` | `1115` | **FUNDED** (0.1 U in escrow) | none yet |
+| `hf-guard-venus` | `1120` | **FUNDED** (0.1 U in escrow) | none yet |
+| `yield-stable-router` | `1121` | **FUNDED** (0.1 U in escrow) | none yet |
+
+Jobs `1115` / `1120` / `1121` completed negotiate → createJob → registerJob → setBudget → fund → `notify_funded` accepted. Background delivery then failed: Pieverse `auto/free` returned **429 Daily request limit exceeded**. Deliverables will be submitted after that quota resets (or after a paid model + redeploy). Do not treat FUNDED as SUBMITTED.
+
+| Field | Grid hire evidence |
 | --- | --- |
-| **Verified hire** | job `963` on BSC testnet — status **SUBMITTED** (not settled; 24h dispute window) |
+| **Verified hire** | job `963` — **SUBMITTED** (not settled; 24h dispute window) |
 | **Deliverable** | [sha256/7a5646…51e5.json](https://bnbagent-api.bnbchain.world/v1/deliverables/sha256/7a5646139eefd148676d12a1e59c9f9e02a4c378cb9f235b74ede4808df251e5.json) |
 | **Grid first deployed** | 2026-09-03 (BNB Agent Studio trial); re-registered on AWS AgentCore 2026-09-07 |
 
@@ -147,11 +158,11 @@ Next.js 15 (App Router) · TypeScript · `viem` + `wagmi` · TanStack Query · B
 - [x] Category, detail, compare and My agents route skeletons.
 - [x] Deploy four sellers on AWS AgentCore: `grid-bnb-usdt` (`2066`), `rebalancing-pcs-v3` (`2207`), `hf-guard-venus` (`2208`), `yield-stable-router` (`2209`).
 - [x] Marketplace ERC-8183 buyer path: negotiate → fund → notify_funded → poll `SUBMITTED`.
-- [x] End-to-end hire verification on BSC testnet (job `963` `SUBMITTED` on `grid-bnb-usdt`, deliverable fetched; not settled).
+- [x] End-to-end hire verification on BSC testnet: job `963` `SUBMITTED` on `grid-bnb-usdt`. Jobs `1115` / `1120` / `1121` `FUNDED` (0.1 U each); Pieverse `auto/free` 429 blocked deliverables.
 - [ ] Read ERC-8004 identity and reputation from BSC for live listings.
 - [ ] Compute category metrics from onchain transaction history.
 - [ ] x402 / B402 activation (credentials not ready; ERC-8183 is the live rail).
-- [x] Capture the three-task Agent Advantage Report (Task 1 Complete / job 963; Tasks 2–3 public-data checks).
+- [x] Capture the three-task Agent Advantage Report (Task 1 Complete / job 963; Tasks 2–3 live + FUNDED jobs `1120` / `1121`, deliverables blocked by Pieverse 429).
 
 ## Hackathon
 

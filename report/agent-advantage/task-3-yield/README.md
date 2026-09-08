@@ -2,7 +2,7 @@
 
 - 领域：DeFi
 - 日期：2026-09-04
-- 使用的 Agent：公开数据对照未走 ERC-8183。专用 seller `yield-stable-router` 现已 **live**（ERC-8004 `2209`，wallet [`0xec2edaf39738Fd92B095dD1c8d10B39074f1B0bE`](https://testnet.bscscan.com/address/0xec2edaf39738Fd92B095dD1c8d10B39074f1B0bE)，runtime `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/yieldstablerouter-FscO4qDKDv`）。`tools.ts` 只有 Venus `supplyRatePerBlock` / `borrowRatePerBlock` 与 ERC-20 `symbol` / `decimals`，没有 Lista 合约 view。下表仍是 2026-09-04 Venus API + DefiLlama 快照，不是该 runtime 的 hire deliverable。
+- 使用的 Agent：2026-09-04 公开数据对照未走 ERC-8183。专用 seller `yield-stable-router` 现已 **live**（ERC-8004 `2209`，wallet [`0xec2edaf39738Fd92B095dD1c8d10B39074f1B0bE`](https://testnet.bscscan.com/address/0xec2edaf39738Fd92B095dD1c8d10B39074f1B0bE)，runtime `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/yieldstablerouter-FscO4qDKDv`）。ERC-8183 job **`1121`** 状态 **FUNDED**（0.1 U 托管）；`notify_funded` 已 accepted。**没有** `deliverable_url`：Pieverse `auto/free` **429 Daily request limit exceeded**。`tools.ts` 只有 Venus `supplyRatePerBlock` / `borrowRatePerBlock` 与 ERC-20 `symbol` / `decimals`，没有 Lista 合约 view。下表仍是 2026-09-04 Venus API + DefiLlama 快照，不是该 runtime 的 hire deliverable。
 - 任务描述：比较 BSC 上 **USDT** 在 Venus 核心池与 Lista Lending 的供应收益。用 TVL 最大的 Lista USDT 池当主对照，避免拿 1.5 万 TVL 的高 APY 池当「Lista 官方利率」。
 
 ## 人工完成
@@ -35,4 +35,4 @@
 
 ## 结论
 
-同一时刻：**Venus 核心 USDT ≈ 3.04% APY，Lista 最大 USDT 池 ≈ 1.53% APY**（DefiLlama）。Agent 拉取比人工翻页快，且不容易把 1.5 万 TVL / 28% 的池当成 Lista 代表利率。这不是 ERC-8183 付费雇佣。
+同一时刻：**Venus 核心 USDT ≈ 3.04% APY，Lista 最大 USDT 池 ≈ 1.53% APY**（DefiLlama）。Agent 拉取比人工翻页快，且不容易把 1.5 万 TVL / 28% 的池当成 Lista 代表利率。ERC-8183 job `1121` 已 **FUNDED**（0.1 U escrow），但交付物未生成（Pieverse 429），所以雇佣侧对照仍不能用 chain deliverable。不要把 FUNDED 写成 SUBMITTED。

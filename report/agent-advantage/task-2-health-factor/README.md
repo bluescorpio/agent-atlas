@@ -2,7 +2,7 @@
 
 - 领域：Security（借贷清算风险）
 - 日期：2026-09-04（公开 API 基线）/ 2026-09-07（hf-guard-venus 技能本地跑通；AWS AgentCore 部署）
-- 使用的 Agent：`hf-guard-venus`（市场 listing **live**，ERC-8004 `2208`，wallet [`0xaaBd845B763761af98eE516a2a08829AEf548Cf3`](https://testnet.bscscan.com/address/0xaaBd845B763761af98eE516a2a08829AEf548Cf3)，runtime `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/hfguardvenus-sG614z4iLZ`）。同品类 demo listing `venus-guardian` **保持 demo**。**尚未**完成 ERC-8183 hire：没有 `job_id` / `deliverable_url`。不要把 demo listing 标成 live，也不要把「已部署」写成「已雇佣验证」。
+- 使用的 Agent：`hf-guard-venus`（市场 listing **live**，ERC-8004 `2208`，wallet [`0xaaBd845B763761af98eE516a2a08829AEf548Cf3`](https://testnet.bscscan.com/address/0xaaBd845B763761af98eE516a2a08829AEf548Cf3)，runtime `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/hfguardvenus-sG614z4iLZ`）。同品类 demo listing `venus-guardian` **保持 demo**。ERC-8183 job **`1120`** 状态 **FUNDED**（0.1 U 托管）；`notify_funded` 已 accepted。**没有** `deliverable_url`：seller 后台 LLM 被 Pieverse `auto/free` **429 Daily request limit exceeded** 挡住。不要把 FUNDED 写成 SUBMITTED，也不要把 `venus-guardian` 标成 live。
 - 任务描述：输入借款地址 + 协议（默认 Venus）+ 可选 HF 阈值；读 Venus 风险参数与账户 `getAccountLiquidity`；口语化结论 + JSON。对照：人工读文档 vs Agent 拉实时 API/RPC。
 
 ## 人工完成
@@ -48,8 +48,8 @@
 
 | 对照 | 人工 | Agent（市场雇佣） | Agent（本地技能） |
 | --- | --- | --- | --- |
-| 时间 | ~8 min 读文档 | **pending**（seller live，尚无 hire `job_id`） | ~50s |
-| 成本 | 0 | 目标 0.1 U，未发生 | 0 |
-| 质量 | 公式对，无账户 | 无 hire | 活的 CF/LT/APY + 诚实的 no_position |
+| 时间 | ~8 min 读文档 | job `1120` **FUNDED**；交付物未生成（Pieverse 429） | ~50s |
+| 成本 | 0 | 0.1 U 已锁定托管，尚未结算 | 0 |
+| 质量 | 公式对，无账户 | 无 `deliverable_url`，不可对照 | 活的 CF/LT/APY + 诚实的 no_position |
 
-在 `hf-guard-venus` 上完成一笔可公开核对的 ERC-8183 hire（`job_id` + `deliverable_url`）之前，Task 2 的「市场雇佣 vs 自己手做」雇佣侧保持 **pending**。Seller 已 live（ERC-8004 `2208` / AgentCore），但这不是 hire 证据。不宣称 Agent 已可替代风控值班，也不把 `venus-guardian` 标成 live。
+ERC-8183 job `1120` 已 **FUNDED**（0.1 U escrow）。Seller ACK 了 `notify_funded`，后台 LLM 被 Pieverse `auto/free` **429** 挡住，所以没有 `deliverable_url`、不是 SUBMITTED。限额恢复或改付费模型后对同一 job 再 `notify_funded`。不把 FUNDED 写成已交付，也不把 `venus-guardian` 标成 live。
