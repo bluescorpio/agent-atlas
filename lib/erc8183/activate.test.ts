@@ -8,6 +8,8 @@ import { a2aInvokeUrl, extractA2aDataPart } from './a2a';
 import { ERC8183_COMMERCE, GRID_A2A_INVOKE_URL, U_TOKEN } from './constants';
 import { extractNegotiationEnvelope, isQuoteExpired } from './envelope';
 import { pollUntilSubmitted } from './poll';
+import { revokeCommerceAllowance } from './revoke';
+import { exactApproveFloor, spendCapWei } from './spend-cap';
 import { buildTaskFromParams } from './task';
 import type { AgentListing } from '../types';
 
@@ -73,9 +75,14 @@ function fakeClient(calls: string[]): Erc8183BuyerClient {
       calls.push('setBudget');
       return { transactionHash: '0xbudget' };
     },
-    fund: async () => {
-      calls.push('fund');
+    fund: async (_jobId, amount, opts) => {
+      calls.push(`fund:${amount.toString()}:${opts?.approveFloor?.toString() ?? 'none'}`);
       return { transactionHash: '0xfund', receipt: { status: 1 } };
+    },
+    tokenAllowance: async () => BigInt(0),
+    approvePaymentToken: async () => {
+      calls.push('revoke');
+      return { transactionHash: '0xrevoke' };
     },
     getJobStatus: async () => {
       calls.push('getJobStatus');
@@ -159,7 +166,7 @@ test('activateWithErc8183 runs createJob → registerJob → setBudget → fund 
   let notified: string | undefined;
   const result = await activateWithErc8183(
     agent(),
-    { envelope: JSON.stringify(envelope), negotiation_hash: String(envelope.negotiation_hash) },
+    { envelope: JSON.stringify(envelope), negotiation_hash: String(envelope.negotiation_hash), budgetCap: '0.1' },
     BUYER,
     {
       now: () => (Number((envelope.response as { quote_expires_at: number }).quote_expires_at) - 10) * 1000,
@@ -176,7 +183,10 @@ test('activateWithErc8183 runs createJob → registerJob → setBudget → fund 
       },
     },
   );
-  assert.deepEqual(calls, ['createJob', 'registerJob', 'setBudget', 'fund', 'poll', 'getDeliverableUrl']);
+  assert.deepEqual(calls, ['createJob', 'registerJob', 'setBudget', 'fund:100000000000000000:100000000000000000', 'poll', 'getDeliverableUrl']);
+  assert.equal(result.receipt.approveFloorWei, '100000000000000000');
+  assert.equal(result.receipt.spendCapWei, '100000000000000000');
+  assert.equal(result.receipt.revokeTx, null);
   assert.equal(notified, '42');
   assert.equal(result.jobId, '42');
   assert.equal(result.status, 'SUBMITTED');
@@ -212,7 +222,7 @@ test('missing envelope always negotiates a fresh quote', async () => {
   );
   assert.equal(negotiated, 1);
   assert.equal(result.deliverableUrl, DELIVERABLE);
-  assert.deepEqual(calls, ['createJob', 'registerJob', 'setBudget', 'fund']);
+  assert.deepEqual(calls, ['createJob', 'registerJob', 'setBudget', 'fund:100000000000000000:100000000000000000']);
 });
 
 test('expired quote_expires_at triggers a fresh negotiate before funding', async () => {
@@ -225,7 +235,7 @@ test('expired quote_expires_at triggers a fresh negotiate before funding', async
   assert.equal(isQuoteExpired(envelope, Number((envelope.response as { quote_expires_at: number }).quote_expires_at) + 1), true);
   const result = await activateWithErc8183(
     agent(),
-    { envelope: JSON.stringify(envelope) },
+    { envelope: JSON.stringify(envelope), budgetCap: '0.1' },
     BUYER,
     {
       now: () => (Number((envelope.response as { quote_expires_at: number }).quote_expires_at) + 5) * 1000,
@@ -241,7 +251,7 @@ test('expired quote_expires_at triggers a fresh negotiate before funding', async
   );
   assert.equal(negotiated, 1);
   assert.equal(result.jobId, '42');
-  assert.deepEqual(calls, ['createJob', 'registerJob', 'setBudget', 'fund']);
+  assert.deepEqual(calls, ['createJob', 'registerJob', 'setBudget', 'fund:100000000000000000:100000000000000000']);
 });
 
 test('pollUntilSubmitted waits until SUBMITTED then reads deliverable_url', async () => {
@@ -320,4 +330,79 @@ test('activateWithErc8183 returns an already SUBMITTED job with a readable URL',
   assert.equal(result.deliverableUrl, DELIVERABLE);
   assert.equal(result.receipt.resumed, true);
   assert.deepEqual(calls, []);
+});
+
+test('spendCapWei parses human $U and exactApproveFloor rejects a quote above the cap', () => {
+  assert.equal(spendCapWei({ budgetCap: '0.1' }).toString(), '100000000000000000');
+  assert.equal(
+    exactApproveFloor(BigInt('100000000000000000'), spendCapWei({ budget_cap: '0.1' })).toString(),
+    '100000000000000000',
+  );
+  assert.throws(
+    () => exactApproveFloor(BigInt('100000000000000000'), spendCapWei({ budgetCap: '0.05' })),
+    /SPEND_CAP_EXCEEDED/,
+  );
+  assert.throws(() => spendCapWei({}), /SPEND_CAP_REQUIRED/);
+});
+
+test('activateWithErc8183 refuses to fund when the quote exceeds budgetCap', async () => {
+  const envelope = loadReportEnvelope();
+  const calls: string[] = [];
+  await assert.rejects(
+    () => activateWithErc8183(
+      agent(),
+      { envelope: JSON.stringify(envelope), budgetCap: '0.05' },
+      BUYER,
+      {
+        now: () => (Number((envelope.response as { quote_expires_at: number }).quote_expires_at) - 10) * 1000,
+        createWallet: () => ({ address: BUYER }),
+        createClient: async () => fakeClient(calls),
+        negotiate: async () => {
+          throw new Error('should not renegotiate');
+        },
+      },
+    ),
+    /SPEND_CAP_EXCEEDED/,
+  );
+  assert.deepEqual(calls, []);
+});
+
+test('leftover commerce allowance is revoked after an exact fund', async () => {
+  const envelope = loadReportEnvelope();
+  const calls: string[] = [];
+  const client = fakeClient(calls);
+  client.tokenAllowance = async () => BigInt('50000000000000000');
+  const result = await activateWithErc8183(
+    agent(),
+    { envelope: JSON.stringify(envelope), budgetCap: '1' },
+    BUYER,
+    {
+      now: () => (Number((envelope.response as { quote_expires_at: number }).quote_expires_at) - 10) * 1000,
+      createWallet: () => ({ address: BUYER }),
+      createClient: async () => client,
+      ...passThroughNotify(),
+      pollDeliverable: async () => DELIVERABLE,
+    },
+  );
+  assert.equal(result.receipt.approveFloorWei, '100000000000000000');
+  assert.equal(result.receipt.revokeTx, '0xrevoke');
+  assert.ok(calls.includes('revoke'));
+});
+
+test('revokeCommerceAllowance writes approve(commerce, 0)', async () => {
+  const calls: string[] = [];
+  const result = await revokeCommerceAllowance(BUYER, {
+    createWallet: () => ({ address: BUYER }),
+    createClient: async () => {
+      const client = fakeClient(calls);
+      client.tokenAllowance = async () => BigInt('100000000000000000');
+      return client;
+    },
+  });
+  assert.equal(result.skipped, false);
+  assert.equal(result.txHash, '0xrevoke');
+  assert.equal(result.spender, ERC8183_COMMERCE);
+  assert.equal(result.token, U_TOKEN);
+  assert.equal(result.allowanceWei, '0');
+  assert.ok(calls.includes('revoke'));
 });

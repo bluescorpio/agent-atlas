@@ -43,6 +43,12 @@ function nextStepFor(error: string): string {
   if (error.startsWith('A2A_OAUTH_CONFIG')) {
     return 'Set the per-agent Cognito secret on the server: GRID_A2A_CLIENT_SECRET, REBALANCING_A2A_CLIENT_SECRET, HF_A2A_CLIENT_SECRET, or YIELD_A2A_CLIENT_SECRET. Do not reuse AGENT_CLIENT_SECRET (that is bnbagent-api, not AgentCore).';
   }
+  if (error === 'SPEND_CAP_REQUIRED' || error === 'SPEND_CAP_INVALID') {
+    return 'Set budgetCap to a positive $U amount. Hire refuses to fund without a real spend cap.';
+  }
+  if (error.startsWith('SPEND_CAP_EXCEEDED')) {
+    return 'Quoted price is above budgetCap. Raise the cap or pick a cheaper quote — Atlas will not approve or fund above the cap.';
+  }
   if (error === 'ERC8183_BUYER_PRIVATE_KEY_REQUIRED' || error.startsWith('A2A_OAUTH')) {
     return 'Set ERC8183_BUYER_PRIVATE_KEY and the per-agent Cognito client secrets on the server (.env.local / Vercel), then retry.';
   }

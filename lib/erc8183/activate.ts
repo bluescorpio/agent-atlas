@@ -1,19 +1,15 @@
 import { getAddress } from 'viem';
-import {
-  buildJobDescription,
-  ERC8183Client,
-  verifyQuoteSignature,
-} from '@bnbagent/sdk/erc8183';
-import { EVMWalletProvider } from '@bnbagent/sdk/wallets';
+import { buildJobDescription, verifyQuoteSignature } from '@bnbagent/sdk/erc8183';
 import type { AgentListing } from '../types';
+import { buyerWallet, defaultBuyerClient } from './buyer';
 import {
   DEFAULT_DEADLINE_MINUTES,
   ERC8183_CHAIN_ID,
   ERC8183_COMMERCE,
-  ERC8183_NETWORK,
   ERC8183_POLICY,
   U_TOKEN,
 } from './constants';
+import { exactApproveFloor, spendCapWei } from './spend-cap';
 import {
   assertCanonicalQuote,
   envelopeFromParamsOptional,
@@ -50,6 +46,8 @@ export type Erc8183BuyerClient = JobPollClient & {
   registerJob(jobId: bigint): Promise<TxLike>;
   setBudget(jobId: bigint, amount: bigint): Promise<TxLike>;
   fund(jobId: bigint, amount: bigint, opts?: { approveFloor?: bigint }): Promise<TxLike>;
+  tokenAllowance(owner: string, spender: string): Promise<bigint>;
+  approvePaymentToken(spender: string, amount: bigint): Promise<TxLike>;
 };
 
 export type Erc8183ActivateDeps = {
@@ -78,26 +76,6 @@ function txHash(result: TxLike, label: string): `0x${string}` {
     throw new Error(`ERC8183_${label.toUpperCase()}_TX_MISSING`);
   }
   return hash as `0x${string}`;
-}
-
-function buyerWallet() {
-  const privateKey = process.env.ERC8183_BUYER_PRIVATE_KEY;
-  if (!privateKey) throw new Error('ERC8183_BUYER_PRIVATE_KEY_REQUIRED');
-  return new EVMWalletProvider({
-    password: process.env.ERC8183_BUYER_KEYSTORE_PASSWORD || 'atlas-ephemeral',
-    privateKey,
-    persist: false,
-  });
-}
-
-async function defaultClient(wallet: { address: string }): Promise<Erc8183BuyerClient> {
-  if (!process.env.RPC_URL && (process.env.BSC_TESTNET_RPC_URL || process.env.RPC_URL_BSC_TESTNET)) {
-    process.env.RPC_URL = process.env.BSC_TESTNET_RPC_URL || process.env.RPC_URL_BSC_TESTNET;
-  }
-  return ERC8183Client.create({
-    walletProvider: wallet as EVMWalletProvider,
-    network: ERC8183_NETWORK,
-  });
 }
 
 function deadlineMinutes(params: Record<string, string>): number {
@@ -149,7 +127,7 @@ export async function activateWithErc8183(
     if (getAddress(wallet) !== getAddress(buyer.address)) {
       throw new Error('WALLET_MISMATCH');
     }
-    const createClient = resolved.createClient ?? defaultClient;
+    const createClient = resolved.createClient ?? defaultBuyerClient;
     const client = await createClient(buyer);
     if (getAddress(client.network.commerceContract) !== getAddress(ERC8183_COMMERCE)) {
       throw new Error(`ERC8183_COMMERCE_MISMATCH: expected ${ERC8183_COMMERCE}`);
@@ -200,6 +178,8 @@ export async function activateWithErc8183(
     }
 
     const rawBudget = quotedPriceWei(envelope);
+    const capWei = spendCapWei(params);
+    const approveFloor = exactApproveFloor(rawBudget, capWei);
     const disputeWindowSec = Number(await client.policy.disputeWindow());
     const expiredAt = BigInt(nowSec + disputeWindowSec + deadlineMinutes(params) * 60);
 
@@ -215,8 +195,15 @@ export async function activateWithErc8183(
     const createTx = txHash(created, 'create');
     const registerTx = txHash(await client.registerJob(jobId), 'register');
     const setBudgetTx = txHash(await client.setBudget(jobId, rawBudget), 'setBudget');
-    const funded = await client.fund(jobId, rawBudget, { approveFloor: rawBudget });
+    // Exact quote only — SDK default floor is 100 tokens if approveFloor is omitted.
+    const funded = await client.fund(jobId, rawBudget, { approveFloor });
     const fundTx = txHash(funded, 'fund');
+
+    let revokeTx: `0x${string}` | null = null;
+    const leftover = await client.tokenAllowance(buyer.address, ERC8183_COMMERCE);
+    if (leftover > BigInt(0)) {
+      revokeTx = txHash(await client.approvePaymentToken(ERC8183_COMMERCE, BigInt(0)), 'revoke');
+    }
 
     const notify = resolved.notifyFunded ?? notifyFunded;
     const ack = await notify(agent, jobId);
@@ -238,12 +225,15 @@ export async function activateWithErc8183(
         quoteExpiresAt: quoteExpiresAt(envelope),
         provider: agent.identity.wallet,
         budgetWei: rawBudget.toString(),
+        spendCapWei: capWei.toString(),
+        approveFloorWei: approveFloor.toString(),
         expiredAt: expiredAt.toString(),
         task: taskDescription(envelope, task),
         createTx,
         registerTx,
         setBudgetTx,
         fundTx,
+        revokeTx,
         fundReceipt: funded.receipt ?? null,
         notify: ack.raw,
         deliverableUrl,

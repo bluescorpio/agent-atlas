@@ -112,6 +112,7 @@ export default function Home() {
         <nav>
           <button type="button" onClick={() => setActive('All agents')}>Explore</button>
           <button type="button" onClick={() => document.getElementById('how')?.scrollIntoView()}>How it works</button>
+          <button type="button" onClick={() => router.push('/me')}>My agents</button>
         </nav>
         <div className="wallet">
           <span className="live-dot" /> chain 97 <ChevronDown size={14} />
@@ -149,7 +150,9 @@ export default function Home() {
         </div>
         <div className="stat-note">
           Network: BSC Testnet / chain {payload?.chainId ?? 97}.
-          Registry: {payload?.identityRegistry ?? '…'}
+          Identity: {payload?.identityRegistry ?? '…'}
+          <br />
+          Reputation: {payload?.reputationRegistry ?? '…'}
           <br />
           {stale ? <b>data stale{loadError ? ` — ${loadError}` : ''}</b> : payload ? `fresh · ${new Date(payload.fetchedAt).toISOString()}` : 'loading on-chain catalog…'}
         </div>
@@ -283,7 +286,7 @@ export default function Home() {
         <h2>From discovery to done.</h2>
         <div className="flow">
           <div><span>01</span><h3>Compare</h3><p>Read registry id, category source, and URI.</p></div>
-          <div><span>02</span><h3>Set limits</h3><p>Capital cap is a hire parameter, not a slogan.</p></div>
+          <div><span>02</span><h3>Set limits</h3><p>budgetCap is enforced against the quote. Hire will not approve or fund above it.</p></div>
           <div><span>03</span><h3>Activate</h3><p>ERC-8183 on BSC testnet for mapped AgentCore sellers.</p></div>
         </div>
       </section>

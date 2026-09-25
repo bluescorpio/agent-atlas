@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { ArrowUpRight, Wallet, X, Zap } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import ConnectButton from './ConnectButton';
+import RevokeAllowance from './RevokeAllowance';
 import type { Category } from '../lib/types';
 
 type Props = {
@@ -80,6 +81,7 @@ export default function ActivateAgent({ agentId, name, category, online, live = 
         return 'borrower address (0x…) is required';
       }
       if (params.hfThreshold && !(Number(params.hfThreshold) > 0)) return 'hfThreshold must be a positive number';
+      if (!params.budgetCap) return 'budgetCap is required';
       return null;
     }
     if (!params.budgetCap) return 'budgetCap is required';
@@ -108,7 +110,7 @@ export default function ActivateAgent({ agentId, name, category, online, live = 
       });
       const body = await response.json() as Result;
       if (!response.ok) {
-        setError(body.error || 'ACTIVATION_FAILED');
+        setError([body.error || 'ACTIVATION_FAILED', body.nextStep].filter(Boolean).join(' — '));
         return;
       }
       setResult(body);
@@ -201,7 +203,13 @@ export default function ActivateAgent({ agentId, name, category, online, live = 
                         <input placeholder="1.2" value={params.hfThreshold} onChange={(e) => setField('hfThreshold', e.target.value)} />
                       </div>
                     </label>
-                    <p className="fine">Read-only Venus check. The agent will not repay or add collateral.</p>
+                    <label>budgetCap <span>Required</span>
+                      <div className="input-wrap">
+                        <input placeholder="0.1" value={params.budgetCap} onChange={(e) => setField('budgetCap', e.target.value)} />
+                        <b>U</b>
+                      </div>
+                    </label>
+                    <p className="fine">Read-only Venus check. The agent will not repay or add collateral. Quote above this cap is rejected on-chain.</p>
                   </>
                 ) : (
                   <label>budgetCap <span>Required</span>
@@ -225,20 +233,20 @@ export default function ActivateAgent({ agentId, name, category, online, live = 
             {step === 3 && (
               <div className="step-body">
                 <div className="pay-summary">
-                  <span>ERC-8183 hire · 0.1 U · chain 97</span>
+                  <span>ERC-8183 hire · spend cap {params.budgetCap || '—'} U · chain 97</span>
                   <strong>{agentId}</strong>
-                  <span className="muted-text">negotiate → fund on-chain → notify_funded → poll SUBMITTED</span>
+                  <span className="muted-text">exact approve of the quote (never a 100 U blanket) · refuse if quote &gt; cap</span>
                   <small>
                     {category === 'health_factor'
-                      ? `${params.protocol || 'Venus'} · ${params.borrower || 'no address'} · HF ${params.hfThreshold || '1.2'}`
+                      ? `${params.protocol || 'Venus'} · ${params.borrower || 'no address'} · HF ${params.hfThreshold || '1.2'} · cap ${params.budgetCap} U`
                       : `${params.gridCount} levels · ${params.lowerPrice}–${params.upperPrice} USDT · cap ${params.budgetCap} U`}
                   </small>
                 </div>
                 {error && <p className="fine">{error}</p>}
                 <button className="primary full" type="button" onClick={submit} disabled={busy || !isConnected}>
-                  {busy ? 'Hiring on-chain… this can take a few minutes' : 'Sign & pay 0.1 U'} <Wallet size={15} />
+                  {busy ? 'Hiring on-chain… this can take a few minutes' : `Sign & pay (cap ${params.budgetCap || '—'} U)`} <Wallet size={15} />
                 </button>
-                <p className="fine">OAuth stays on the server. Connected wallet must match ERC8183_BUYER_PRIVATE_KEY.</p>
+                <p className="fine">OAuth stays on the server. Connected wallet must match ERC8183_BUYER_PRIVATE_KEY. Approve spender is ERC-8183 commerce.</p>
               </div>
             )}
             {step === 4 && (
@@ -253,6 +261,7 @@ export default function ActivateAgent({ agentId, name, category, online, live = 
                     <code>{result.deliverableUrl}</code>
                   </a>
                 )}
+                <RevokeAllowance />
                 <button className="primary full" type="button" onClick={() => setOpen(false)}>
                   Close <ArrowUpRight size={15} />
                 </button>
