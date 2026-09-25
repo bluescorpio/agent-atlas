@@ -1,10 +1,8 @@
 # Agent Atlas
 
-**Live URL:** [https://agent-atlas.xyz](https://agent-atlas.xyz) → [https://www.agent-atlas.xyz](https://www.agent-atlas.xyz)
+**Live URL:** [https://agent-atlas.xyz](https://agent-atlas.xyz) · canonical [https://www.agent-atlas.xyz](https://www.agent-atlas.xyz)
 
-Checked 2026-09-25: apex TLS is Let's Encrypt `CN=agent-atlas.xyz` (not `*.vercel.app`); `curl -I https://agent-atlas.xyz` is **308** to `www`; `curl -I https://www.agent-atlas.xyz` is **200**. Old preview `agent-atlas-eight.vercel.app` currently **403**.
-
-The domain is live. **The Vercel deployment behind it is still the pre-catalog build** (11 listings, 4 live + 7 demo, no `/api/agents`). Local `main` has ERC-8004 catalog + tracking APIs + spend cap; those go live after this branch is pushed.
+Checked 2026-09-25: apex TLS is Let's Encrypt `CN=agent-atlas.xyz` (not `*.vercel.app`). `curl -I https://agent-atlas.xyz` is **308** to `www`; `curl -I https://www.agent-atlas.xyz` is **200**. Listings and `GET /api/agents` are live ERC-8004 reads on chain 97.
 
 **Status:** Marketplace listings are ERC-8004 tokenURI rows on BSC testnet (chain 97). Four AgentCore sellers are hireable (ids `2066` / `2207` / `2208` / `2209`). ERC-8183: job `963` **SUBMITTED** (grid). Jobs `1115` / `1120` / `1121` **FUNDED** — deliverables blocked by Pieverse `auto/free` 429.
 
@@ -123,9 +121,9 @@ End-to-end hire on the **deployed** preview still needs the four Cognito secrets
 
 | Yield Optimisation | Health Factor |
 | --- | --- |
-| _Screenshot pending (recapture after the catalog deploy)_ | _Screenshot pending_ |
+| _Screenshot pending_ | _Screenshot pending_ |
 
-`01-home` / `02-agent-detail` may still show an earlier card layout. After `main` is pushed, production should drop the 7 demo rows.
+`01-home` recaptured 2026-09-25 from `https://www.agent-atlas.xyz` (ERC-8004 catalog, chain 97, Identity/Reputation printed). `02-agent-detail` may still show an earlier card layout.
 
 ## Data sources
 
@@ -181,7 +179,6 @@ Next.js 15 (App Router) · TypeScript · `viem` + `wagmi` · TanStack Query · B
 - [x] Tracking APIs: `/api/agents`, `/api/hires`, `/api/agents/by-owner`.
 - [x] Exact `$U` approve, spend cap enforced against the quote, revoke commerce allowance.
 - [x] Custom domain `agent-atlas.xyz` on Vercel (apex 308 → `www` 200; Let's Encrypt).
-- [ ] Push local `main` so production drops demo listings and serves `/api/agents`.
 - [ ] ≥3 hireable AgentCore sellers per category.
 - [ ] Vercel Cognito secrets + a fresh SUBMITTED hire from the deployed site.
 - [ ] Compute category metrics from onchain transaction history.
