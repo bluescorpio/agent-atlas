@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { activate } from '../../../lib/x402/activate';
-import { getMockAgent } from '../../../lib/chain/mock';
+import { getAgentListing } from '../../../lib/chain/erc8004';
 import { activateErrorHttpStatus } from '../../../lib/erc8183/agentcore-oauth';
 
 export const runtime = 'nodejs';
@@ -32,7 +32,7 @@ function asParams(body: {
 
 function nextStepFor(error: string): string {
   if (error === 'DEMO_AGENT_NOT_ACTIVATABLE') {
-    return 'This listing is Demo — not deployed. Hire a live agent (grid-bnb-usdt, rebalancing-pcs-v3, hf-guard-venus, or yield-stable-router) via ERC-8183.';
+    return 'This agent is not hireable from Atlas (no AgentCore A2A client mapped from its registration URI).';
   }
   if (error === 'WALLET_NOT_CONNECTED') {
     return 'Connect a wallet, then retry. The address must match ERC8183_BUYER_PRIVATE_KEY on the server.';
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
       quote?: unknown;
       negotiation_hash?: unknown;
     };
-    const agent = body.agentId ? getMockAgent(body.agentId) : undefined;
+    const agent = body.agentId ? await getAgentListing(body.agentId) : undefined;
     if (!agent) return NextResponse.json({ error: 'AGENT_NOT_FOUND' }, { status: 404 });
     const result = await activate(agent, asParams(body), body.wallet ?? '');
     return NextResponse.json({

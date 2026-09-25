@@ -35,19 +35,22 @@ function agent(): AgentListing {
       registeredAt: 0,
     },
     category: 'grid_trading',
+    categorySource: 'registration_json',
     reputation: {
-      feedbackCount: { value: 0, source: { kind: 'demo' }, updatedAt: 0 },
-      score: { value: 0, source: { kind: 'demo' }, updatedAt: 0 },
-      validations: { value: 0, source: { kind: 'demo' }, updatedAt: 0 },
+      feedbackCount: { value: 0, source: { kind: 'unavailable', reason: 'test' }, updatedAt: 0 },
+      score: { value: 0, source: { kind: 'unavailable', reason: 'test' }, updatedAt: 0 },
+      validations: { value: 0, source: { kind: 'unavailable', reason: 'test' }, updatedAt: 0 },
     },
     metrics: {},
-    status: { online: true, lastSeen: 0, source: { kind: 'demo' } },
+    status: { online: true, lastSeen: 0, responding: true, source: { kind: 'unavailable', reason: 'test' } },
     pricing: { model: 'per_task', amount: '0.10', token: 'U' },
     protocols: ['PancakeSwap'],
     capabilities: [],
     limits: [],
-    source: 'live',
+    source: 'onchain',
     isDemo: false,
+    hireable: true,
+    marketplaceId: 'grid-bnb-usdt',
   };
 }
 

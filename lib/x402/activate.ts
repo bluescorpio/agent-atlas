@@ -27,7 +27,7 @@ export async function activate(
   params: Record<string, string>,
   wallet: string,
 ): Promise<ActivationResult> {
-  if (agent.source !== 'live') throw new Error('DEMO_AGENT_NOT_ACTIVATABLE');
+  if (!agent.hireable) throw new Error('DEMO_AGENT_NOT_ACTIVATABLE');
   if (!wallet) throw new Error('WALLET_NOT_CONNECTED');
   if (!agent.identity.endpoint) throw new Error('AGENT_ENDPOINT_REQUIRED');
   return activateWithErc8183(agent, params, wallet);
