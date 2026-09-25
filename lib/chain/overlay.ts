@@ -2,6 +2,7 @@ import overlay from '../registry.json';
 
 type OverlayRow = {
   agentId: string;
+  name?: string;
   category: string;
   source: string;
   erc8004Id?: number;

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getAddress, isAddress, parseAbiItem } from 'viem';
-import { publicClient } from '../../../lib/chain/client';
+import { getLogsChunked, HIRE_LOG_LOOKBACK, RPC_LOG_CHUNK } from '../../../lib/chain/logs';
 import { ERC8183_COMMERCE } from '../../../lib/erc8183/constants';
 
 export const runtime = 'nodejs';
@@ -23,24 +23,19 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'wallet query must be a 0x address' }, { status: 400 });
   }
   const client = getAddress(wallet);
-  const latest = await publicClient.getBlockNumber();
-  const span = BigInt(5_000_000);
-  const fromBlock = latest > span ? latest - span : BigInt(0);
   try {
-    const created = await publicClient.getLogs({
-      address: ERC8183_COMMERCE,
-      event: JOB_CREATED,
-      args: { client },
-      fromBlock,
-      toBlock: latest,
-    });
-    const funded = await publicClient.getLogs({
-      address: ERC8183_COMMERCE,
-      event: JOB_FUNDED,
-      args: { client },
-      fromBlock,
-      toBlock: latest,
-    });
+    const [created, funded] = await Promise.all([
+      getLogsChunked({
+        address: ERC8183_COMMERCE,
+        event: JOB_CREATED,
+        args: { client },
+      }),
+      getLogsChunked({
+        address: ERC8183_COMMERCE,
+        event: JOB_FUNDED,
+        args: { client },
+      }),
+    ]);
     const fundedIds = new Set(funded.map((log) => (log.args.jobId ?? BigInt(0)).toString()));
     const hires = created.map((log) => {
       const jobId = (log.args.jobId ?? BigInt(0)).toString();
@@ -53,13 +48,15 @@ export async function GET(request: Request) {
         fundedInWindow: fundedIds.has(jobId),
       };
     });
+    const latest = created[0]?.blockNumber ?? funded[0]?.blockNumber;
     return NextResponse.json({
       chainId: 97,
       commerce: ERC8183_COMMERCE,
       wallet: client,
-      fromBlock: fromBlock.toString(),
-      toBlock: latest.toString(),
-      logWindowNote: 'Public RPC range cap; older jobs may be missing. Status FUNDED vs SUBMITTED is not inferred beyond events in this window.',
+      lookbackBlocks: HIRE_LOG_LOOKBACK.toString(),
+      chunkBlocks: RPC_LOG_CHUNK.toString(),
+      latestTouchedBlock: latest?.toString() ?? null,
+      logWindowNote: 'eth_getLogs paged in 49k-block chunks (publicnode cap 50k). Older jobs beyond lookback may be missing. FUNDED vs SUBMITTED is only from events in this window.',
       count: hires.length,
       hires,
       submittedProbe: JOB_SUBMITTED.name,
@@ -71,8 +68,6 @@ export async function GET(request: Request) {
       chainId: 97,
       commerce: ERC8183_COMMERCE,
       wallet: client,
-      fromBlock: fromBlock.toString(),
-      toBlock: latest.toString(),
     }, { status: 503 });
   }
 }

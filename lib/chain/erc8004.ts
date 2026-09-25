@@ -4,6 +4,7 @@ import { identityRegistryAbi, reputationRegistryAbi } from './abi/erc8004';
 import { getRegistryAddresses } from './addresses';
 import { cached } from './cache';
 import { CHAIN_ID, publicClient } from './client';
+import { getLogsChunked } from './logs';
 import { overlayFor } from './overlay';
 import {
   a2aEndpointFromRegistration,
@@ -119,16 +120,20 @@ function catalogFromUri(erc8004Id: number, uri: string, fetchedAt: number): Cata
   const endpoint = a2aEndpointFromRegistration(file);
   const { category, source } = categoryFromRegistration(file, endpoint);
   const marketplaceId = liveAgentIdFromEndpoint(endpoint) ?? undefined;
+  const extra = overlayFor(erc8004Id);
+  const rawName = file?.name?.trim() || '';
+  const generic = !rawName || rawName === 'studio-agent' || rawName === `Agent ${erc8004Id}`;
+  const fromFile = protocolsFromRegistration(file);
   return {
     erc8004Id,
-    name: file?.name?.trim() || `Agent ${erc8004Id}`,
+    name: (!generic && rawName) || extra?.name || extra?.agentId || `Agent ${erc8004Id}`,
     description: file?.description?.trim() || 'Registration file has no description.',
     category,
     categorySource: source,
     endpoint,
-    protocols: protocolsFromRegistration(file),
-    capabilities: file?.capabilities ?? [],
-    limits: file?.limits ?? [],
+    protocols: fromFile.length ? fromFile : (extra?.protocols ?? []),
+    capabilities: (file?.capabilities?.length ? file.capabilities : extra?.capabilities) ?? [],
+    limits: (file?.limits?.length ? file.limits : extra?.limits) ?? [],
     hireable: Boolean(marketplaceId),
     marketplaceId,
     uriOk: Boolean(file),
@@ -193,19 +198,14 @@ export async function getCatalog(): Promise<Catalog> {
 export async function getRegistrationTx(agentId: bigint): Promise<`0x${string}` | undefined> {
   return cached(`registered-tx:${agentId}`, async () => {
     const { identity } = getRegistryAddresses();
-    const latest = await publicClient.getBlockNumber();
-    const span = BigInt(5_000_000);
-    const fromBlock = latest > span ? latest - span : BigInt(0);
     try {
-      const logs = await publicClient.getLogs({
+      const logs = await getLogsChunked({
         address: identity,
         event: REGISTERED_EVENT,
         args: { agentId },
-        fromBlock,
-        toBlock: latest,
-      });
+      }, { lookback: BigInt(2_000_000), stopOnFirst: true });
       const hash = logs.at(-1)?.transactionHash;
-      return hash;
+      return typeof hash === 'string' && hash.startsWith('0x') ? hash as `0x${string}` : undefined;
     } catch {
       return undefined;
     }
@@ -293,7 +293,9 @@ async function hydrateListing(row: CatalogAgent, catalog: Catalog): Promise<Agen
       agentId: String(row.erc8004Id),
       owner,
       wallet,
-      name: extra?.agentId && row.name === `Agent ${row.erc8004Id}` ? extra.agentId : row.name,
+      name: extra?.name || (row.name === `Agent ${row.erc8004Id}` || row.name === 'studio-agent'
+        ? (extra?.agentId ?? row.name)
+        : row.name),
       description: row.description,
       endpoint: row.endpoint,
       registeredAt: catalog.fetchedAt,
