@@ -163,13 +163,13 @@ docs/screenshots/
 
 ---
 
-### 任务 0 · 自有域名 `agent-atlas.xyz`（**最先做**）
+### 任务 0 · 自有域名 `agent-atlas.xyz`（✅ 已购买并上线，只剩 README URL）
 
 **为什么**：官方明确写 “Platform subdomains \(vercel.app, pages.dev, ……\) aren‘t sufficient”,URL 必须是自己的。
 
 **步骤**
 
-1. 注册域名 `agent-atlas.xyz`（Cloudflare Registrar / Porkbun / Namecheap）。
+1. ✅ **域名已购买**：`agent-atlas.xyz`（用户已完成，无需再注册）。确认可登录域名 DNS 管理后台，直接进入下一步。
 
 2. Vercel → 项目 `agent-atlas` → Settings → Domains → Add，填入 `agent-atlas.xyz` 与 `www.agent-atlas.xyz`。
 
