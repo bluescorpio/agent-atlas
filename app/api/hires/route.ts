@@ -56,7 +56,7 @@ export async function GET(request: Request) {
       lookbackBlocks: HIRE_LOG_LOOKBACK.toString(),
       chunkBlocks: RPC_LOG_CHUNK.toString(),
       latestTouchedBlock: latest?.toString() ?? null,
-      logWindowNote: 'eth_getLogs paged in 49k-block chunks (publicnode cap 50k). Older jobs beyond lookback may be missing. FUNDED vs SUBMITTED is only from events in this window.',
+      logWindowNote: 'eth_getLogs paged in ≤49k-block chunks (publicnode cap 50k). If the RPC pruned older blocks, the window stops at the newest readable range instead of 503. FUNDED vs SUBMITTED is only from events in this window.',
       count: hires.length,
       hires,
       submittedProbe: JOB_SUBMITTED.name,

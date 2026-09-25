@@ -56,3 +56,16 @@ test('longer AgentCore runtime markers win over prefixes', () => {
   assert.equal(classified.source, 'runtime_id');
   assert.equal(liveAgentIdFromEndpoint(a2aEndpointFromRegistration(file)), 'rebalancing-pcs-v3-eth');
 });
+
+test('hfguardvenususdc is not classified as hfguardvenus', () => {
+  const file = {
+    name: 'studio-agent',
+    services: [{
+      endpoint: 'https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Fhfguardvenususdc-zuny8PELL4/invocations?qualifier=DEFAULT',
+    }],
+  };
+  const classified = categoryFromRegistration(file, a2aEndpointFromRegistration(file));
+  assert.equal(classified.category, 'health_factor');
+  assert.equal(classified.source, 'runtime_id');
+  assert.equal(liveAgentIdFromEndpoint(a2aEndpointFromRegistration(file)), 'hf-guard-venus-usdc');
+});

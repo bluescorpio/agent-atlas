@@ -19,12 +19,16 @@ export const COGNITO_ISSUER =
 export type LiveAgentId =
   | 'grid-bnb-usdt'
   | 'grid-eth-usdt'
+  | 'grid-cake-bnb'
   | 'rebalancing-pcs-v3'
   | 'rebalancing-pcs-v3-eth'
+  | 'rebalancing-thena'
   | 'hf-guard-venus'
   | 'hf-guard-lista'
+  | 'hf-guard-venus-usdc'
   | 'yield-stable-router'
-  | 'yield-venus-usdt';
+  | 'yield-venus-usdt'
+  | 'yield-lista-usdt';
 
 export type AgentCoreClientConfig = {
   agentId: LiveAgentId;
@@ -49,6 +53,13 @@ export const AGENTCORE_A2A_CLIENTS: Record<LiveAgentId, AgentCoreClientConfig> =
     runtimeMarker: 'gridethusdt',
     category: 'grid_trading',
   },
+  'grid-cake-bnb': {
+    agentId: 'grid-cake-bnb',
+    clientId: '7cfq6n4i9v8ri1d2qbpufig84u',
+    secretEnv: 'GRID_CAKE_A2A_CLIENT_SECRET',
+    runtimeMarker: 'gridcakebnb',
+    category: 'grid_trading',
+  },
   'rebalancing-pcs-v3': {
     agentId: 'rebalancing-pcs-v3',
     clientId: '67vlfr0f7piov7em6p47hr1u7f',
@@ -61,6 +72,13 @@ export const AGENTCORE_A2A_CLIENTS: Record<LiveAgentId, AgentCoreClientConfig> =
     clientId: '6f64mjn82smitdv5l71qdjc3j',
     secretEnv: 'REBALANCING_ETH_A2A_CLIENT_SECRET',
     runtimeMarker: 'rebalancingpcsv3eth',
+    category: 'rebalancing',
+  },
+  'rebalancing-thena': {
+    agentId: 'rebalancing-thena',
+    clientId: '7as3h1fro4odku3r4vh8f86pco',
+    secretEnv: 'THENA_A2A_CLIENT_SECRET',
+    runtimeMarker: 'rebalancingthena',
     category: 'rebalancing',
   },
   'hf-guard-venus': {
@@ -77,6 +95,13 @@ export const AGENTCORE_A2A_CLIENTS: Record<LiveAgentId, AgentCoreClientConfig> =
     runtimeMarker: 'hfguardlista',
     category: 'health_factor',
   },
+  'hf-guard-venus-usdc': {
+    agentId: 'hf-guard-venus-usdc',
+    clientId: '6keh8gp8dn4fnhf8gohbh2h9q0',
+    secretEnv: 'HF_VENUS_USDC_A2A_CLIENT_SECRET',
+    runtimeMarker: 'hfguardvenususdc',
+    category: 'health_factor',
+  },
   'yield-stable-router': {
     agentId: 'yield-stable-router',
     clientId: '5ahoiupde17urbcab90a8ekkvs',
@@ -91,9 +116,16 @@ export const AGENTCORE_A2A_CLIENTS: Record<LiveAgentId, AgentCoreClientConfig> =
     runtimeMarker: 'yieldvenususdt',
     category: 'yield',
   },
+  'yield-lista-usdt': {
+    agentId: 'yield-lista-usdt',
+    clientId: '7gnes73ftfn53ngdeeo0qqagm2',
+    secretEnv: 'YIELD_LISTA_A2A_CLIENT_SECRET',
+    runtimeMarker: 'yieldlistausdt',
+    category: 'yield',
+  },
 };
 
-/** Longer runtime markers first so `rebalancingpcsv3eth` does not match `rebalancingpcsv3`. */
+/** Longer runtime markers first so `rebalancingpcsv3eth` / `hfguardvenususdc` do not match shorter prefixes. */
 function clientsByMarkerLength(): AgentCoreClientConfig[] {
   return Object.values(AGENTCORE_A2A_CLIENTS).sort(
     (a, b) => b.runtimeMarker.length - a.runtimeMarker.length,
