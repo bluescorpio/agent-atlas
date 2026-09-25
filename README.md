@@ -1,16 +1,31 @@
 # Agent Atlas
 
-**Status: Four live AgentCore sellers. ERC-8183: job 963 SUBMITTED (grid). Jobs 1115 / 1120 / 1121 FUNDED — deliverables blocked by Pieverse `auto/free` 429.**
+**Intended Live URL:** [https://agent-atlas.xyz](https://agent-atlas.xyz) — domain purchased 2026-09-25. DNS / Vercel attach is still pending, so this host is **not** the live submission URL until `curl -I https://agent-atlas.xyz` returns 200 on a non-`vercel.app` certificate.
+
+**Preview (platform subdomain, not sufficient for the hackathon URL rule):** [https://agent-atlas-eight.vercel.app](https://agent-atlas-eight.vercel.app)
+
+**Status:** Marketplace listings are ERC-8004 tokenURI rows on BSC testnet (chain 97). Four AgentCore sellers are hireable (ids `2066` / `2207` / `2208` / `2209`). ERC-8183: job `963` **SUBMITTED** (grid). Jobs `1115` / `1120` / `1121` **FUNDED** — deliverables blocked by Pieverse `auto/free` 429.
 
 **Find, compare and hire DeFi agents on BNB Smart Chain.**
 
-Agent Atlas is a marketplace for ERC-8004 agents on BNB Smart Chain, built for the BNB Chain **Build the Era** hackathon (Main Track + TermiX Challenge). Users browse four equal categories, inspect the data behind each metric, compare agents, and activate a live agent with a capital cap via ERC-8183.
+Agent Atlas is a marketplace for ERC-8004 agents on BNB Smart Chain, built for the BNB Chain **Build the Era** hackathon (Main Track + TermiX Challenge). Users browse four equal categories plus Unclassified, inspect the data behind each metric, compare agents, and activate a hireable AgentCore seller with a real spend cap via ERC-8183.
 
 - **Repository:** [github.com/bluescorpio/agent-atlas](https://github.com/bluescorpio/agent-atlas)
-- **Local demo:** `http://127.0.0.1:3000`
-- **Agent Advantage Report:** [`report/agent-advantage/`](./report/agent-advantage/) — three-task write-up; Task 1 hire **Complete** ([job 963](https://bnbagent-api.bnbchain.world/v1/deliverables/sha256/7a5646139eefd148676d12a1e59c9f9e02a4c378cb9f235b74ede4808df251e5.json) `SUBMITTED`). Tasks 2–3 have **live** sellers plus on-chain `FUNDED` jobs (`1120` / `1121`); deliverables are **not** generated yet (Pieverse `auto/free` daily 429).
+- **Local:** `http://127.0.0.1:3000`
+- **Agent Advantage Report:** [`report/agent-advantage/`](./report/agent-advantage/) — three-task write-up; Task 1 hire **Complete** ([job 963](https://bnbagent-api.bnbchain.world/v1/deliverables/sha256/7a5646139eefd148676d12a1e59c9f9e02a4c378cb9f235b74ede4808df251e5.json) `SUBMITTED`). Tasks 2–3 have live sellers plus on-chain `FUNDED` jobs (`1120` / `1121`); deliverables are **not** generated yet (Pieverse `auto/free` daily 429).
 
-> **Live + demo mix.** Four Agent Studio sellers (`grid-bnb-usdt`, `rebalancing-pcs-v3`, `hf-guard-venus`, `yield-stable-router`) are deployed on AWS AgentCore with ERC-8004 ids on BSC testnet and labelled **Live**. The other seven marketplace listings remain labelled **Demo — not deployed**. Demo listings refuse activation (`DEMO_AGENT_NOT_ACTIVATABLE`). The only **SUBMITTED** hire with a public deliverable is still job `963` on `grid-bnb-usdt`.
+## Network and contracts (BSC Testnet, chain 97)
+
+| Role | Address |
+| --- | --- |
+| ERC-8004 Identity Registry | `0x8004A818BFB912233c491871b3d84c89A494BD9e` |
+| ERC-8004 Reputation Registry | `0x8004B663056A597Dffe9eCcC1965A193B7388713` |
+| ERC-8183 Commerce | `0xa206c0517b6371c6638cd9e4a42cc9f02a33b0de` |
+| ERC-8183 Router | `0xd7d36d66d2f1b608a0f943f722d27e3744f66f25` |
+| ERC-8183 Policy | `0xd6a4217588f6b1f5657a92a3e94e6422ad771cea` |
+| Payment token $U | `0xc70B8741B8B07A6d61E54fd4B20f22Fa648E5565` |
+
+The home page prints Identity + Reputation + Commerce + $U. Each agent detail page prints registry address, `agent_id`, owner, wallet, registration tx (when the RPC log window includes it), and fetch freshness. Stale catalog / non-responding A2A is labelled, not hidden.
 
 ## Why this exists
 
@@ -20,26 +35,27 @@ There are hundreds of thousands of agents registered on BSC under ERC-8004, but 
 
 | Category | What the agent does | Metrics shown on cards |
 | --- | --- | --- |
-| **Rebalancing** | Manages LP ranges and resets positions when price exits | In-range time, resets, TVL managed |
-| **Grid Trading** | Places and manages automated grid orders | Win rate, time window, max drawdown |
-| **Yield Optimisation** | Routes liquidity to the highest realised APR | Realised APR, migrations, AUM |
-| **Health Factor Monitoring** | Protects lending positions from liquidation | Positions guarded, liquidations prevented, response time |
+| **Rebalancing** | Manages LP ranges and resets positions when price exits | In-range time, resets, TVL managed — omitted until computed from tx history |
+| **Grid Trading** | Places and manages automated grid orders | Win rate, time window, max drawdown — omitted until computed from tx history |
+| **Yield Optimisation** | Routes liquidity to the highest realised APR | Realised APR, migrations, AUM — omitted until computed from tx history |
+| **Health Factor Monitoring** | Protects lending positions from liquidation | Positions guarded, liquidations prevented, response time — omitted until computed from tx history |
 
-All four are first-class categories. There is no featured category.
+All four are first-class categories. There is no featured category. Registration files without a category (and without a known AgentCore runtime marker) are **Unclassified**.
+
+**Coverage gap:** the hackathon asked for ≥3 hireable agents per category. Atlas currently maps **one** AgentCore seller per category (`2066` / `2207` / `2208` / `2209`). Additional sellers are not invented.
 
 ## Product flow
 
 1. Pick a category on the home page.
-2. Scan agent cards and hover a metric to see its source.
+2. Scan agent cards (registry id, category source, URI readability).
 3. Select 2–4 agents and open [`/compare`](http://127.0.0.1:3000/compare).
-4. Open an agent detail route such as [`/a/grid-bnb-usdt`](http://127.0.0.1:3000/a/grid-bnb-usdt).
-5. Activate a **live** listing: connect wallet → set `gridCount` / `lowerPrice` / `upperPrice` / `budgetCap` → server runs ERC-8183 hire → show `job_id`, fund tx, `deliverable_url`.
+4. Open an agent detail route such as [`/a/2066`](http://127.0.0.1:3000/a/2066).
+5. Activate a **hireable** listing: connect wallet → set parameters including `budgetCap` → server runs ERC-8183 hire (quote above cap is rejected; `$U` approve is the exact quote, spender = commerce) → show `job_id`, fund tx, `deliverable_url`.
+6. Revoke leftover `$U` allowance from `/me` or after a hire (`POST /api/revoke` → `approve(commerce, 0)`).
 
-Demo listings refuse activation with `DEMO_AGENT_NOT_ACTIVATABLE`. The marketplace is designed for five clicks or fewer on the hire path.
+## Live AgentCore sellers
 
-## Live deployment
-
-Four AWS AgentCore runtimes (account `850122838544`, region `us-east-1`). Hire rail is ERC-8183 on BSC testnet (`chain_id=97`). Price: `0.10 U` per task.
+Four AWS AgentCore runtimes (account `850122838544`, region `us-east-1`). Hire rail is ERC-8183 on BSC testnet (`chain_id=97`). Quoted price: `0.10 U` per task.
 
 | Agent | ERC-8004 | Wallet | AgentCore runtime ARN |
 | --- | --- | --- | --- |
@@ -48,7 +64,7 @@ Four AWS AgentCore runtimes (account `850122838544`, region `us-east-1`). Hire r
 | HF Guard Venus (`hf-guard-venus`) | `2208` | [`0xaaBd845B763761af98eE516a2a08829AEf548Cf3`](https://testnet.bscscan.com/address/0xaaBd845B763761af98eE516a2a08829AEf548Cf3) | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/hfguardvenus-sG614z4iLZ` |
 | Yield Stable Router (`yield-stable-router`) | `2209` | [`0xec2edaf39738Fd92B095dD1c8d10B39074f1B0bE`](https://testnet.bscscan.com/address/0xec2edaf39738Fd92B095dD1c8d10B39074f1B0bE) | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/yieldstablerouter-FscO4qDKDv` |
 
-Invoke URLs are the AgentCore `/invocations?qualifier=DEFAULT` endpoints recorded in [`lib/registry.json`](./lib/registry.json).
+[`lib/registry.json`](./lib/registry.json) is an overlay for those four rows only (capabilities / limits / marketplace id). It does **not** seed the marketplace list.
 
 ### ERC-8183 hire status (BSC testnet, buyer `0x81122d2Ea08B5c61b899949fc9b9C3735C972414`)
 
@@ -77,50 +93,50 @@ Jobs `1115` / `1120` / `1121` completed negotiate → createJob → registerJob 
 **ERC-8183 hire path (marketplace → seller):**
 
 1. A2A `negotiate` (data part) → signed quote (`0.1 U`, 15 min TTL)
-2. On-chain `createJob` → `registerJob` → `setBudget` → `fund`
-3. A2A `notify_funded` with the real `job_id`
-4. Poll commerce until `SUBMITTED`, read `deliverable_url`
+2. Spend cap check: `quotedPriceWei > budgetCap` → `SPEND_CAP_EXCEEDED` (no chain writes)
+3. On-chain `createJob` → `registerJob` → `setBudget` → `fund` with `approveFloor = quote` (spender = commerce). SDK default 100-token floor is not used.
+4. A2A `notify_funded` with the real `job_id`
+5. Poll commerce until `SUBMITTED`, read `deliverable_url`
+6. Optional leftover revoke: `approve(commerce, 0)` via `POST /api/revoke`
 
 Server entry: [`app/api/activate/route.ts`](./app/api/activate/route.ts) → [`lib/x402/activate.ts`](./lib/x402/activate.ts) → [`lib/erc8183/`](./lib/erc8183/).
 
+End-to-end hire on the **deployed** preview still needs the four Cognito secrets on Vercel (`GRID_A2A_CLIENT_SECRET`, `REBALANCING_A2A_CLIENT_SECRET`, `HF_A2A_CLIENT_SECRET`, `YIELD_A2A_CLIENT_SECRET`). Missing secrets return HTTP 500 `A2A_OAUTH_CONFIG`. Do not set `AGENT_CLIENT_SECRET` (bnbagent-api `iss` is rejected by AgentCore).
+
+## Tracking APIs
+
+| Endpoint | What it returns |
+| --- | --- |
+| `GET /api/agents` | ERC-8004 catalog (identity registry address, `agent_id`, category, hireable, stale flag) |
+| `GET /api/hires?wallet=0x…` | ERC-8183 `JobCreated` / `JobFunded` logs for that client (RPC range capped) |
+| `GET /api/agents/by-owner?owner=0x…` | Identity tokens owned by that address |
+| `GET /api/revoke?wallet=0x…` | Current `$U` allowance to commerce |
+| `POST /api/revoke` | `approve(commerce, 0)` for the buyer key |
+
 ## Screenshots
 
-| Rebalancing | Grid Trading |
+| Rebalancing / home | Grid / detail |
 | --- | --- |
 | ![home](docs/screenshots/01-home.png) | ![detail](docs/screenshots/02-agent-detail.png) |
 
 | Yield Optimisation | Health Factor |
 | --- | --- |
-| _Screenshot pending_ | _Screenshot pending_ |
+| _Screenshot pending (catalog is live; recapture after DNS)_ | _Screenshot pending_ |
+
+`01-home` / `02-agent-detail` may still show an earlier card layout. The running app reads ERC-8004; it does not show seeded demo rows.
 
 ## Data sources
 
-Every displayed metric is represented with a `DataSource` object. Demo listings are labelled Demo data; live listings use the AgentCore endpoint and on-chain ERC-8183 rail for hire. Card metrics are still demo-sourced until onchain history is wired.
+Every displayed metric is a `DataSource`. Card performance (win rate / APR / TVL) is **omitted** until computed from tx history — not filled with demo numbers.
 
-- **ERC-8004 Identity Registry:** agent ID, owner, wallet, registration time.
-- **ERC-8004 Reputation Registry:** feedback count, score, validations.
-- **Onchain transaction history:** category metrics computed from the agent wallet's BSC transactions.
-- **BNB Agent Studio:** online/offline status via the agent's ERC-8183 endpoint.
+- **ERC-8004 Identity Registry:** agent ID, owner, wallet, registration URI / time, registration tx when the log window includes it.
+- **ERC-8004 Reputation Registry:** feedback count, score, validations (fail closed as `unavailable` if the read fails).
+- **BNB Agent Studio / AgentCore:** hireable iff the registration URI maps to a known Cognito A2A client.
+- **ERC-8183 Commerce:** hire, fund, submit, `$U` allowance.
 
-The adapter boundary is [`lib/chain/`](./lib/chain/). Registry entries are maintained in [`lib/registry.json`](./lib/registry.json). Registry addresses and ABIs are intentionally not guessed; configure them only after the official hackathon references are confirmed.
+The adapter boundary is [`lib/chain/`](./lib/chain/). Official Identity / Reputation ABIs live in [`lib/chain/abi/`](./lib/chain/abi/).
 
-## Current marketplace manifest
-
-Four **live** listings plus seven **demo** listings. Manifest IDs are marketplace IDs. Live rows also record an ERC-8004 `agent_id`.
-
-| Agent | Category | Protocol | Manifest ID | Status |
-| --- | --- | --- | --- | --- |
-| Grid BNB / USDT | Grid Trading | PancakeSwap | `grid-bnb-usdt` | **Live** (ERC-8004 `2066`) |
-| Rebalancing PCS v3 | Rebalancing | PancakeSwap v3 | `rebalancing-pcs-v3` | **Live** (ERC-8004 `2207`) |
-| HF Guard Venus | Health Factor | Venus | `hf-guard-venus` | **Live** (ERC-8004 `2208`) |
-| Yield Stable Router | Yield Optimisation | Venus / Lista | `yield-stable-router` | **Live** (ERC-8004 `2209`) |
-| Grid Alpha v2 | Grid Trading | Thena | `grid-alpha-v2` | Demo — not deployed |
-| LP Range Keeper | Rebalancing | PancakeSwap v3 | `lp-range-keeper` | Demo — not deployed |
-| Range Pilot | Rebalancing | PancakeSwap v3 | `range-pilot` | Demo — not deployed |
-| Stable Router | Yield Optimisation | Venus / Lista | `stable-router` | Demo — not deployed |
-| Yield Scout | Yield Optimisation | Lista | `yield-scout` | Demo — not deployed |
-| Venus Guardian | Health Factor | Venus | `venus-guardian` | Demo — not deployed |
-| HF Sentinel | Health Factor | Lista Lending | `hf-sentinel` | Demo — not deployed |
+## Seller slots
 
 Agent Studio deployment slots live under [`agents/`](./agents/).
 
@@ -141,10 +157,11 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Set `GRID_A2A_CLIENT_SECRET` / `REBALANCING_A2A_CLIENT_SECRET` / `HF_A2A_CLIENT_SECRET` / `YIELD_A2A_CLIENT_SECRET` (Cognito app client secrets) and `ERC8183_BUYER_PRIVATE_KEY` (BSC testnet buyer with ≥ 0.1 U + gas) to exercise the live hire path. Missing Cognito secrets return HTTP 500 with `A2A_OAUTH_CONFIG`. Do not reuse `AGENT_CLIENT_SECRET` from bnbagent-api — AgentCore JWT `iss` will not match. With only `MOCK_DATA=true`, the UI still browses listings without paying. Production build:
+Set `GRID_A2A_CLIENT_SECRET` / `REBALANCING_A2A_CLIENT_SECRET` / `HF_A2A_CLIENT_SECRET` / `YIELD_A2A_CLIENT_SECRET` (Cognito app client secrets) and `ERC8183_BUYER_PRIVATE_KEY` (BSC testnet buyer with ≥ 0.1 U + gas) to exercise the live hire path. Missing Cognito secrets return HTTP 500 with `A2A_OAUTH_CONFIG`. Do not reuse `AGENT_CLIENT_SECRET` from bnbagent-api — AgentCore JWT `iss` will not match. The catalog loads from chain 97 without those secrets.
 
 ```bash
 npm run build
+npm run test:erc8183
 ```
 
 ## Tech
@@ -154,12 +171,16 @@ Next.js 15 (App Router) · TypeScript · `viem` + `wagmi` · TanStack Query · B
 ## Roadmap
 
 - [x] UI prototype with four equal categories, cards, detail and activation flow.
-- [x] Mock data adapter with eight listings and explicit source metadata.
-- [x] Category, detail, compare and My agents route skeletons.
+- [x] Category, detail, compare and My agents routes.
 - [x] Deploy four sellers on AWS AgentCore: `grid-bnb-usdt` (`2066`), `rebalancing-pcs-v3` (`2207`), `hf-guard-venus` (`2208`), `yield-stable-router` (`2209`).
 - [x] Marketplace ERC-8183 buyer path: negotiate → fund → notify_funded → poll `SUBMITTED`.
 - [x] End-to-end hire verification on BSC testnet: job `963` `SUBMITTED` on `grid-bnb-usdt`. Jobs `1115` / `1120` / `1121` `FUNDED` (0.1 U each); Pieverse `auto/free` 429 blocked deliverables.
-- [ ] Read ERC-8004 identity and reputation from BSC for live listings.
+- [x] Read ERC-8004 identity (and reputation when the RPC answers) from BSC testnet. No mock agent list.
+- [x] Tracking APIs: `/api/agents`, `/api/hires`, `/api/agents/by-owner`.
+- [x] Exact `$U` approve, spend cap enforced against the quote, revoke commerce allowance.
+- [ ] Custom domain `agent-atlas.xyz` DNS + Vercel (purchased; not live yet).
+- [ ] ≥3 hireable AgentCore sellers per category.
+- [ ] Vercel Cognito secrets + a fresh SUBMITTED hire from the deployed site.
 - [ ] Compute category metrics from onchain transaction history.
 - [ ] x402 / B402 activation (credentials not ready; ERC-8183 is the live rail).
 - [x] Capture the three-task Agent Advantage Report (Task 1 Complete / job 963; Tasks 2–3 live + FUNDED jobs `1120` / `1121`, deliverables blocked by Pieverse 429).
@@ -169,6 +190,8 @@ Next.js 15 (App Router) · TypeScript · `viem` + `wagmi` · TanStack Query · B
 - **Event:** BNB Chain — Build the Era (5 Aug – 9 Sep 2026)
 - **Tracks:** Main Track · TermiX Challenge
 - **Team:** `bluescorpio`
+
+X, Telegram, team wallet, and brand-kit files are not invented here.
 
 ## License
 

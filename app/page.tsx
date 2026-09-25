@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAccount } from 'wagmi';
 import ConnectButton from '../components/ConnectButton';
+import { IDENTITY_REGISTRY_TESTNET, REPUTATION_REGISTRY_TESTNET } from '../lib/chain/addresses';
+import { ERC8183_COMMERCE, U_TOKEN } from '../lib/erc8183/constants';
 import {
   ArrowUpRight, ChevronDown, CircleHelp, ExternalLink, LayoutGrid, List, Menu,
   Search, ShieldCheck, SlidersHorizontal, Zap,
@@ -126,8 +128,14 @@ export default function Home() {
           <div className="eyebrow"><span className="pulse" /> ERC-8004 ON BSC TESTNET</div>
           <h1>Hire agents.<br /><i>Read the chain.</i></h1>
           <p>
-            Identity from ERC-8004 Identity Registry.<br />
+            Identity from ERC-8004 Identity Registry on BSC Testnet (chain 97).<br />
             Hire via ERC-8183 when the registration file exposes an AgentCore A2A endpoint.
+          </p>
+          <p className="fine" style={{ textAlign: 'left', color: '#a7aaa4' }}>
+            Identity {payload?.identityRegistry ?? IDENTITY_REGISTRY_TESTNET}<br />
+            Reputation {payload?.reputationRegistry ?? REPUTATION_REGISTRY_TESTNET}<br />
+            Commerce {ERC8183_COMMERCE}<br />
+            $U {U_TOKEN}
           </p>
         </div>
       </section>
@@ -302,7 +310,7 @@ export default function Home() {
 
       <footer>
         <div className="brand"><div className="brand-mark">✦</div><span>AGENT ATLAS</span></div>
-        <span>BSC Testnet · chain 97 · {payload?.identityRegistry}</span>
+        <span>BSC Testnet · chain 97 · identity {payload?.identityRegistry ?? IDENTITY_REGISTRY_TESTNET}</span>
         <span>
           {stale ? 'DATA STALE' : 'ONCHAIN'} <span className="live-dot" />
         </span>
