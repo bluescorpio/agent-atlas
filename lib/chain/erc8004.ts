@@ -35,6 +35,7 @@ export type CatalogAgent = {
   hireable: boolean;
   marketplaceId?: string;
   uriOk: boolean;
+  owner?: `0x${string}`;
   fetchedAt: number;
 };
 
@@ -154,10 +155,24 @@ export async function getCatalog(): Promise<Catalog> {
         })),
         allowFailure: true,
       });
+      const owners = await publicClient.multicall({
+        contracts: ids.map((id) => ({
+          address: identity,
+          abi: identityRegistryAbi,
+          functionName: 'ownerOf' as const,
+          args: [id],
+        })),
+        allowFailure: true,
+      });
       result.forEach((row, index) => {
         const id = Number(ids[index]);
         if (row.status !== 'success' || typeof row.result !== 'string') return;
-        agents.push(catalogFromUri(id, row.result, fetchedAt));
+        const entry = catalogFromUri(id, row.result, fetchedAt);
+        const ownerRow = owners[index];
+        if (ownerRow.status === 'success' && typeof ownerRow.result === 'string') {
+          entry.owner = ownerRow.result as `0x${string}`;
+        }
+        agents.push(entry);
       });
     }
     const unclassifiedCount = agents.filter((a) => a.category === 'unclassified').length;
