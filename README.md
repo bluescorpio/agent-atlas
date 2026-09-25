@@ -42,7 +42,7 @@ There are hundreds of thousands of agents registered on BSC under ERC-8004, but 
 
 All four are first-class categories. There is no featured category. Registration files without a category (and without a known AgentCore runtime marker) are **Unclassified**.
 
-**Coverage gap:** the hackathon asked for ≥3 hireable agents per category. Atlas currently maps **one** AgentCore seller per category (`2066` / `2207` / `2208` / `2209`). Additional sellers are not invented.
+**Coverage gap:** the hackathon asked for ≥3 hireable agents per category. Atlas currently maps **two** AgentCore sellers per category (`2066`+`2476` / `2207`+`2477` / `2208`+`2479` / `2209`+`2478`). The third of each category is not invented.
 
 ## Product flow
 
@@ -55,16 +55,20 @@ All four are first-class categories. There is no featured category. Registration
 
 ## Live AgentCore sellers
 
-Four AWS AgentCore runtimes (account `850122838544`, region `us-east-1`). Hire rail is ERC-8183 on BSC testnet (`chain_id=97`). Quoted price: `0.10 U` per task.
+Eight AWS AgentCore runtimes (account `850122838544`, region `us-east-1`). Hire rail is ERC-8183 on BSC testnet (`chain_id=97`). Quoted price: `0.10 U` per task.
 
 | Agent | ERC-8004 | Wallet | AgentCore runtime ARN |
 | --- | --- | --- | --- |
 | Grid BNB / USDT (`grid-bnb-usdt`) | `2066` | [`0x3573e861363880f18F357Ca8258FA1393573d676`](https://testnet.bscscan.com/address/0x3573e861363880f18F357Ca8258FA1393573d676) | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/gridbnbusdt-bohsdVE5Pv` |
+| Grid ETH / USDT (`grid-eth-usdt`) | `2476` | [`0x9E94A5953663ae95F35aFd4E16AFFdd41FaD79eD`](https://testnet.bscscan.com/address/0x9E94A5953663ae95F35aFd4E16AFFdd41FaD79eD) | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/gridethusdt-oqxEWYAiua` |
 | Rebalancing PCS v3 (`rebalancing-pcs-v3`) | `2207` | [`0x48566287e8afDE4Eb7550f44f778E4C1a3B2EC32`](https://testnet.bscscan.com/address/0x48566287e8afDE4Eb7550f44f778E4C1a3B2EC32) | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/rebalancingpcsv3-P5Q200A9kZ` |
+| Rebalancing PCS v3 ETH (`rebalancing-pcs-v3-eth`) | `2477` | [`0xA25c59b2C52d47E244C090360B800825b24196b5`](https://testnet.bscscan.com/address/0xA25c59b2C52d47E244C090360B800825b24196b5) | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/rebalancingpcsv3eth-Rgu6VM9KJh` |
 | HF Guard Venus (`hf-guard-venus`) | `2208` | [`0xaaBd845B763761af98eE516a2a08829AEf548Cf3`](https://testnet.bscscan.com/address/0xaaBd845B763761af98eE516a2a08829AEf548Cf3) | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/hfguardvenus-sG614z4iLZ` |
+| HF Guard Lista (`hf-guard-lista`) | `2479` | [`0x4f9B2A5B8632e36bD6c7A88d793E40d08f84d801`](https://testnet.bscscan.com/address/0x4f9B2A5B8632e36bD6c7A88d793E40d08f84d801) | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/hfguardlista-kNxgsU6ml7` |
 | Yield Stable Router (`yield-stable-router`) | `2209` | [`0xec2edaf39738Fd92B095dD1c8d10B39074f1B0bE`](https://testnet.bscscan.com/address/0xec2edaf39738Fd92B095dD1c8d10B39074f1B0bE) | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/yieldstablerouter-FscO4qDKDv` |
+| Yield Venus USDT (`yield-venus-usdt`) | `2478` | [`0x15969074080c033DE2Cdd7f04CCD1B8DbF4F99c2`](https://testnet.bscscan.com/address/0x15969074080c033DE2Cdd7f04CCD1B8DbF4F99c2) | `arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/yieldvenususdt-W9fUNC7LdC` |
 
-[`lib/registry.json`](./lib/registry.json) is an overlay for those four rows only (capabilities / limits / marketplace id). It does **not** seed the marketplace list.
+[`lib/registry.json`](./lib/registry.json) is an overlay for those live rows only (capabilities / limits / marketplace id). It does **not** seed the marketplace list.
 
 ### ERC-8183 hire status (BSC testnet, buyer `0x81122d2Ea08B5c61b899949fc9b9C3735C972414`)
 
@@ -101,7 +105,7 @@ Jobs `1115` / `1120` / `1121` completed negotiate → createJob → registerJob 
 
 Server entry: [`app/api/activate/route.ts`](./app/api/activate/route.ts) → [`lib/x402/activate.ts`](./lib/x402/activate.ts) → [`lib/erc8183/`](./lib/erc8183/).
 
-End-to-end hire on the **deployed** preview still needs the four Cognito secrets on Vercel (`GRID_A2A_CLIENT_SECRET`, `REBALANCING_A2A_CLIENT_SECRET`, `HF_A2A_CLIENT_SECRET`, `YIELD_A2A_CLIENT_SECRET`). Missing secrets return HTTP 500 `A2A_OAUTH_CONFIG`. Do not set `AGENT_CLIENT_SECRET` (bnbagent-api `iss` is rejected by AgentCore).
+End-to-end hire on the **deployed** preview still needs the per-seller Cognito secrets on Vercel (see `.env.example`). Missing secrets return HTTP 500 `A2A_OAUTH_CONFIG`. Do not set `AGENT_CLIENT_SECRET` (bnbagent-api `iss` is rejected by AgentCore).
 
 ## Tracking APIs
 
@@ -143,9 +147,13 @@ Agent Studio deployment slots live under [`agents/`](./agents/).
 | Deployment slot | Category | Protocol | Status |
 | --- | --- | --- | --- |
 | `grid-bnb-usdt` | Grid Trading | PancakeSwap | **Live** — ERC-8004 `2066`, AgentCore `gridbnbusdt-bohsdVE5Pv` |
+| `grid-eth-usdt` | Grid Trading | PancakeSwap | **Live** — ERC-8004 `2476`, AgentCore `gridethusdt-oqxEWYAiua` |
 | `rebalancing-pcs-v3` | Rebalancing | PancakeSwap v3 | **Live** — ERC-8004 `2207`, AgentCore `rebalancingpcsv3-P5Q200A9kZ` |
+| `rebalancing-pcs-v3-eth` | Rebalancing | PancakeSwap v3 | **Live** — ERC-8004 `2477`, AgentCore `rebalancingpcsv3eth-Rgu6VM9KJh` |
 | `hf-guard-venus` | Health Factor Monitoring | Venus | **Live** — ERC-8004 `2208`, AgentCore `hfguardvenus-sG614z4iLZ` |
+| `hf-guard-lista` | Health Factor Monitoring | Venus Comptroller views | **Live** — ERC-8004 `2479`, AgentCore `hfguardlista-kNxgsU6ml7` |
 | `yield-stable-router` | Yield Optimisation | Venus / Lista | **Live** — ERC-8004 `2209`, AgentCore `yieldstablerouter-FscO4qDKDv` |
+| `yield-venus-usdt` | Yield Optimisation | Venus | **Live** — ERC-8004 `2478`, AgentCore `yieldvenususdt-W9fUNC7LdC` |
 
 ## Run locally
 
@@ -157,7 +165,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Set `GRID_A2A_CLIENT_SECRET` / `REBALANCING_A2A_CLIENT_SECRET` / `HF_A2A_CLIENT_SECRET` / `YIELD_A2A_CLIENT_SECRET` (Cognito app client secrets) and `ERC8183_BUYER_PRIVATE_KEY` (BSC testnet buyer with ≥ 0.1 U + gas) to exercise the live hire path. Missing Cognito secrets return HTTP 500 with `A2A_OAUTH_CONFIG`. Do not reuse `AGENT_CLIENT_SECRET` from bnbagent-api — AgentCore JWT `iss` will not match. The catalog loads from chain 97 without those secrets.
+Set the per-seller Cognito secrets from `.env.example` (`GRID_A2A_CLIENT_SECRET`, `GRID_ETH_A2A_CLIENT_SECRET`, `REBALANCING_A2A_CLIENT_SECRET`, `REBALANCING_ETH_A2A_CLIENT_SECRET`, `HF_A2A_CLIENT_SECRET`, `HF_LISTA_A2A_CLIENT_SECRET`, `YIELD_A2A_CLIENT_SECRET`, `YIELD_VENUS_A2A_CLIENT_SECRET`) and `ERC8183_BUYER_PRIVATE_KEY` (BSC testnet buyer with ≥ 0.1 U + gas) to exercise the live hire path. Missing Cognito secrets return HTTP 500 with `A2A_OAUTH_CONFIG`. Do not reuse `AGENT_CLIENT_SECRET` from bnbagent-api — AgentCore JWT `iss` will not match. The catalog loads from chain 97 without those secrets.
 
 ```bash
 npm run build
@@ -172,7 +180,7 @@ Next.js 15 (App Router) · TypeScript · `viem` + `wagmi` · TanStack Query · B
 
 - [x] UI prototype with four equal categories, cards, detail and activation flow.
 - [x] Category, detail, compare and My agents routes.
-- [x] Deploy four sellers on AWS AgentCore: `grid-bnb-usdt` (`2066`), `rebalancing-pcs-v3` (`2207`), `hf-guard-venus` (`2208`), `yield-stable-router` (`2209`).
+- [x] Deploy eight sellers on AWS AgentCore (two per category): `2066`/`2476`, `2207`/`2477`, `2208`/`2479`, `2209`/`2478`.
 - [x] Marketplace ERC-8183 buyer path: negotiate → fund → notify_funded → poll `SUBMITTED`.
 - [x] End-to-end hire verification on BSC testnet: job `963` `SUBMITTED` on `grid-bnb-usdt`. Jobs `1115` / `1120` / `1121` `FUNDED` (0.1 U each); Pieverse `auto/free` 429 blocked deliverables.
 - [x] Read ERC-8004 identity (and reputation when the RPC answers) from BSC testnet. No mock agent list.

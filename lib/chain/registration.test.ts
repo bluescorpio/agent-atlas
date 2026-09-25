@@ -4,6 +4,7 @@ import {
   a2aEndpointFromRegistration,
   categoryFromRegistration,
   decodeAgentUri,
+  liveAgentIdFromEndpoint,
 } from './registration';
 
 test('decodeAgentUri reads data:application/json;base64 registration files', () => {
@@ -41,4 +42,17 @@ test('missing category and runtime marker is Unclassified', () => {
   const classified = categoryFromRegistration({ name: 'other', description: 'no tags' });
   assert.equal(classified.category, 'unclassified');
   assert.equal(classified.source, 'unclassified');
+});
+
+test('longer AgentCore runtime markers win over prefixes', () => {
+  const file = {
+    name: 'studio-agent',
+    services: [{
+      endpoint: 'https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Frebalancingpcsv3eth-Rgu6VM9KJh/invocations?qualifier=DEFAULT',
+    }],
+  };
+  const classified = categoryFromRegistration(file, a2aEndpointFromRegistration(file));
+  assert.equal(classified.category, 'rebalancing');
+  assert.equal(classified.source, 'runtime_id');
+  assert.equal(liveAgentIdFromEndpoint(a2aEndpointFromRegistration(file)), 'rebalancing-pcs-v3-eth');
 });

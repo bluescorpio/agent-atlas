@@ -15,12 +15,20 @@ const GRID_INVOKE =
   'https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Fgridbnbusdt-bohsdVE5Pv/invocations?qualifier=DEFAULT';
 const HF_INVOKE =
   'https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Fhfguardvenus-sG614z4iLZ/invocations?qualifier=DEFAULT';
+const GRID_ETH_INVOKE =
+  'https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Fgridethusdt-oqxEWYAiua/invocations?qualifier=DEFAULT';
+const REBALANCING_ETH_INVOKE =
+  'https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Frebalancingpcsv3eth-Rgu6VM9KJh/invocations?qualifier=DEFAULT';
 
 const SECRET_KEYS = [
   'GRID_A2A_CLIENT_SECRET',
+  'GRID_ETH_A2A_CLIENT_SECRET',
   'REBALANCING_A2A_CLIENT_SECRET',
+  'REBALANCING_ETH_A2A_CLIENT_SECRET',
   'HF_A2A_CLIENT_SECRET',
+  'HF_LISTA_A2A_CLIENT_SECRET',
   'YIELD_A2A_CLIENT_SECRET',
+  'YIELD_VENUS_A2A_CLIENT_SECRET',
 ] as const;
 
 function withEnv(overrides: Record<string, string | undefined>, fn: () => void) {
@@ -44,9 +52,13 @@ function withEnv(overrides: Record<string, string | undefined>, fn: () => void) 
 
 test('AgentCore client ids match the live Cognito apps', () => {
   assert.equal(AGENTCORE_A2A_CLIENTS['grid-bnb-usdt'].clientId, '3pn5ccnsb9h7utc8oic25l9iq');
+  assert.equal(AGENTCORE_A2A_CLIENTS['grid-eth-usdt'].clientId, '7vcb6sbgqhj1agkrn7ti3s62ol');
   assert.equal(AGENTCORE_A2A_CLIENTS['rebalancing-pcs-v3'].clientId, '67vlfr0f7piov7em6p47hr1u7f');
+  assert.equal(AGENTCORE_A2A_CLIENTS['rebalancing-pcs-v3-eth'].clientId, '6f64mjn82smitdv5l71qdjc3j');
   assert.equal(AGENTCORE_A2A_CLIENTS['hf-guard-venus'].clientId, 'chtopvung16glktss3assicu5');
+  assert.equal(AGENTCORE_A2A_CLIENTS['hf-guard-lista'].clientId, '1jq6remm6vn6t92b39rj5a620e');
   assert.equal(AGENTCORE_A2A_CLIENTS['yield-stable-router'].clientId, '5ahoiupde17urbcab90a8ekkvs');
+  assert.equal(AGENTCORE_A2A_CLIENTS['yield-venus-usdt'].clientId, '1m3ebbd2ftdt6pappi1ot9q2bi');
   assert.equal(COGNITO_TOKEN_URL, 'https://bnbagent-850122838544.auth.us-east-1.amazoncognito.com/oauth2/token');
   assert.equal(COGNITO_SCOPE, 'bnbagent-seller/invoke');
   assert.equal(COGNITO_ISSUER, 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_yx8QfJRRu');
@@ -56,6 +68,8 @@ test('resolves marketplace id from AgentCore invoke ARN', () => {
   assert.equal(isAgentCoreEndpoint(GRID_INVOKE), true);
   assert.equal(agentIdFromAgentCoreEndpoint(GRID_INVOKE), 'grid-bnb-usdt');
   assert.equal(agentIdFromAgentCoreEndpoint(HF_INVOKE), 'hf-guard-venus');
+  assert.equal(agentIdFromAgentCoreEndpoint(GRID_ETH_INVOKE), 'grid-eth-usdt');
+  assert.equal(agentIdFromAgentCoreEndpoint(REBALANCING_ETH_INVOKE), 'rebalancing-pcs-v3-eth');
 });
 
 test('missing per-agent secret is A2A_OAUTH_CONFIG, even if AGENT_CLIENT_SECRET is set', () => {

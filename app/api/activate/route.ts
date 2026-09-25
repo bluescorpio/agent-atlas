@@ -41,7 +41,7 @@ function nextStepFor(error: string): string {
     return 'Connected wallet must equal the ERC8183_BUYER_PRIVATE_KEY address (BSC testnet buyer with ≥ 0.1 U + gas).';
   }
   if (error.startsWith('A2A_OAUTH_CONFIG')) {
-    return 'Set the per-agent Cognito secret on the server: GRID_A2A_CLIENT_SECRET, REBALANCING_A2A_CLIENT_SECRET, HF_A2A_CLIENT_SECRET, or YIELD_A2A_CLIENT_SECRET. Do not reuse AGENT_CLIENT_SECRET (that is bnbagent-api, not AgentCore).';
+    return 'Set the per-agent Cognito secret on the server (see .env.example: GRID_A2A_CLIENT_SECRET / GRID_ETH_A2A_CLIENT_SECRET / REBALANCING_* / HF_* / YIELD_*). Do not reuse AGENT_CLIENT_SECRET (that is bnbagent-api, not AgentCore).';
   }
   if (error === 'SPEND_CAP_REQUIRED' || error === 'SPEND_CAP_INVALID') {
     return 'Set budgetCap to a positive $U amount. Hire refuses to fund without a real spend cap.';

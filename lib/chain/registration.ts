@@ -1,5 +1,9 @@
 import type { Category } from '../types';
-import { AGENTCORE_A2A_CLIENTS, type LiveAgentId } from '../erc8183/agentcore-oauth';
+import {
+  AGENTCORE_A2A_CLIENTS,
+  agentIdFromAgentCoreEndpoint,
+  type LiveAgentId,
+} from '../erc8183/agentcore-oauth';
 
 export type RegistrationFile = {
   name?: string;
@@ -69,13 +73,7 @@ export function a2aEndpointFromRegistration(file: RegistrationFile | null): stri
 
 export function liveAgentIdFromEndpoint(endpoint: string | undefined): LiveAgentId | null {
   if (!endpoint) return null;
-  const decoded = decodeURIComponent(endpoint);
-  for (const config of Object.values(AGENTCORE_A2A_CLIENTS)) {
-    if (decoded.includes(config.runtimeMarker) || endpoint.includes(config.runtimeMarker)) {
-      return config.agentId;
-    }
-  }
-  return null;
+  return agentIdFromAgentCoreEndpoint(endpoint);
 }
 
 export function categoryFromRegistration(
@@ -87,10 +85,9 @@ export function categoryFromRegistration(
   if (fromJson) return { category: fromJson, source: 'registration_json' };
 
   const liveId = liveAgentIdFromEndpoint(endpoint ?? a2aEndpointFromRegistration(file));
-  if (liveId === 'grid-bnb-usdt') return { category: 'grid_trading', source: 'runtime_id' };
-  if (liveId === 'rebalancing-pcs-v3') return { category: 'rebalancing', source: 'runtime_id' };
-  if (liveId === 'hf-guard-venus') return { category: 'health_factor', source: 'runtime_id' };
-  if (liveId === 'yield-stable-router') return { category: 'yield', source: 'runtime_id' };
+  if (liveId) {
+    return { category: AGENTCORE_A2A_CLIENTS[liveId].category, source: 'runtime_id' };
+  }
 
   return { category: 'unclassified', source: 'unclassified' };
 }

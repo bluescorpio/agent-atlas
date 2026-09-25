@@ -8,6 +8,8 @@
  * at AgentCore invoke URLs — that is the `Claim 'iss' value mismatch` 401.
  */
 
+import type { Category } from '../types';
+
 export const COGNITO_TOKEN_URL =
   'https://bnbagent-850122838544.auth.us-east-1.amazoncognito.com/oauth2/token';
 export const COGNITO_SCOPE = 'bnbagent-seller/invoke';
@@ -16,15 +18,20 @@ export const COGNITO_ISSUER =
 
 export type LiveAgentId =
   | 'grid-bnb-usdt'
+  | 'grid-eth-usdt'
   | 'rebalancing-pcs-v3'
+  | 'rebalancing-pcs-v3-eth'
   | 'hf-guard-venus'
-  | 'yield-stable-router';
+  | 'hf-guard-lista'
+  | 'yield-stable-router'
+  | 'yield-venus-usdt';
 
 export type AgentCoreClientConfig = {
   agentId: LiveAgentId;
   clientId: string;
-  secretEnv: 'GRID_A2A_CLIENT_SECRET' | 'REBALANCING_A2A_CLIENT_SECRET' | 'HF_A2A_CLIENT_SECRET' | 'YIELD_A2A_CLIENT_SECRET';
+  secretEnv: string;
   runtimeMarker: string;
+  category: Exclude<Category, 'unclassified'>;
 };
 
 export const AGENTCORE_A2A_CLIENTS: Record<LiveAgentId, AgentCoreClientConfig> = {
@@ -33,26 +40,65 @@ export const AGENTCORE_A2A_CLIENTS: Record<LiveAgentId, AgentCoreClientConfig> =
     clientId: '3pn5ccnsb9h7utc8oic25l9iq',
     secretEnv: 'GRID_A2A_CLIENT_SECRET',
     runtimeMarker: 'gridbnbusdt',
+    category: 'grid_trading',
+  },
+  'grid-eth-usdt': {
+    agentId: 'grid-eth-usdt',
+    clientId: '7vcb6sbgqhj1agkrn7ti3s62ol',
+    secretEnv: 'GRID_ETH_A2A_CLIENT_SECRET',
+    runtimeMarker: 'gridethusdt',
+    category: 'grid_trading',
   },
   'rebalancing-pcs-v3': {
     agentId: 'rebalancing-pcs-v3',
     clientId: '67vlfr0f7piov7em6p47hr1u7f',
     secretEnv: 'REBALANCING_A2A_CLIENT_SECRET',
     runtimeMarker: 'rebalancingpcsv3',
+    category: 'rebalancing',
+  },
+  'rebalancing-pcs-v3-eth': {
+    agentId: 'rebalancing-pcs-v3-eth',
+    clientId: '6f64mjn82smitdv5l71qdjc3j',
+    secretEnv: 'REBALANCING_ETH_A2A_CLIENT_SECRET',
+    runtimeMarker: 'rebalancingpcsv3eth',
+    category: 'rebalancing',
   },
   'hf-guard-venus': {
     agentId: 'hf-guard-venus',
     clientId: 'chtopvung16glktss3assicu5',
     secretEnv: 'HF_A2A_CLIENT_SECRET',
     runtimeMarker: 'hfguardvenus',
+    category: 'health_factor',
+  },
+  'hf-guard-lista': {
+    agentId: 'hf-guard-lista',
+    clientId: '1jq6remm6vn6t92b39rj5a620e',
+    secretEnv: 'HF_LISTA_A2A_CLIENT_SECRET',
+    runtimeMarker: 'hfguardlista',
+    category: 'health_factor',
   },
   'yield-stable-router': {
     agentId: 'yield-stable-router',
     clientId: '5ahoiupde17urbcab90a8ekkvs',
     secretEnv: 'YIELD_A2A_CLIENT_SECRET',
     runtimeMarker: 'yieldstablerouter',
+    category: 'yield',
+  },
+  'yield-venus-usdt': {
+    agentId: 'yield-venus-usdt',
+    clientId: '1m3ebbd2ftdt6pappi1ot9q2bi',
+    secretEnv: 'YIELD_VENUS_A2A_CLIENT_SECRET',
+    runtimeMarker: 'yieldvenususdt',
+    category: 'yield',
   },
 };
+
+/** Longer runtime markers first so `rebalancingpcsv3eth` does not match `rebalancingpcsv3`. */
+function clientsByMarkerLength(): AgentCoreClientConfig[] {
+  return Object.values(AGENTCORE_A2A_CLIENTS).sort(
+    (a, b) => b.runtimeMarker.length - a.runtimeMarker.length,
+  );
+}
 
 export function isAgentCoreEndpoint(endpoint: string): boolean {
   return /bedrock-agentcore\./i.test(endpoint) || /amazonaws\.com\/runtimes\//i.test(endpoint);
@@ -60,7 +106,7 @@ export function isAgentCoreEndpoint(endpoint: string): boolean {
 
 export function agentIdFromAgentCoreEndpoint(endpoint: string): LiveAgentId | null {
   const decoded = decodeURIComponent(endpoint);
-  for (const config of Object.values(AGENTCORE_A2A_CLIENTS)) {
+  for (const config of clientsByMarkerLength()) {
     if (decoded.includes(config.runtimeMarker) || endpoint.includes(config.runtimeMarker)) {
       return config.agentId;
     }
@@ -73,7 +119,7 @@ export function resolveLiveAgentId(agentId: string | undefined, endpoint: string
   const fromEndpoint = agentIdFromAgentCoreEndpoint(endpoint);
   if (fromEndpoint) return fromEndpoint;
   throw new Error(
-    `A2A_OAUTH_CONFIG: unknown AgentCore seller (agentId=${agentId ?? 'missing'}). Expected grid-bnb-usdt, rebalancing-pcs-v3, hf-guard-venus, or yield-stable-router.`,
+    `A2A_OAUTH_CONFIG: unknown AgentCore seller (agentId=${agentId ?? 'missing'}). Expected a mapped AgentCore runtime in AGENTCORE_A2A_CLIENTS.`,
   );
 }
 
