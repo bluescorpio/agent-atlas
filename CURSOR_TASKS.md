@@ -365,12 +365,12 @@ GET /api/agents/by-owner?owner=0x...  # 某 owner 名下的 agent
 | Hire / Deposit / Completion / Rating 事件及签名 | 第 2.4 节 |
 | agent ID / owner wallet 记录方式 | ERC-8004 `Registered(agentId, agentURI, owner)` + `ownerOf` / `getAgentWallet` |
 | 非链上信息 API endpoint | 任务 6 的三个端点（填真实路径 + 示例响应） |
-| 团队钱包地址 | 4 个 seller 钱包 + buyer 钱包 + **团队主钱包（待补）** |
+| 团队钱包地址 | 12 个 seller（见 `lib/registry.json`）+ buyer `0x81122d2Ea08B5c61b899949fc9b9C3735C972414` + **团队主钱包 `0xDdd54D4D71FF9AD625D8e90DC6DdEafEeB5632Ba`** |
 | Live URL | `https://agent-atlas.xyz` |
-| Socials | X / Telegram（待补） |
-| Brand kit | Logo 源文件（待补） |
+| Socials | X [x.com/wang_xiaolou](https://x.com/wang_xiaolou) · Telegram [@wang_xiaolou](https://t.me/wang_xiaolou) |
+| Brand kit | [`public/brand/`](./public/brand/) + [`docs/brand/`](./docs/brand/)（操作者 2026-09-26 提供） |
 
-> 仍需人工补齐：X、Telegram、团队主钱包、logo/brand kit。Cursor 不负责这些，但**不要**在代码/文档里编造。
+> 操作者已补：X、Telegram、团队主钱包、logo/brand kit。记录见 [`docs/tracking.md`](./docs/tracking.md)。不要另造账号或地址。
 
 ---
 

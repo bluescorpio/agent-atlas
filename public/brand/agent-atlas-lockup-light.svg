@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 240" role="img" aria-label="Agent Atlas">
+  <g transform="translate(48 48) scale(0.28125)">
+    <path fill="#d8f56a" fill-rule="evenodd" d="M284 86 L426 228 Q454 256 426 284 L284 426 Q256 454 228 426 L86 284 Q58 256 86 228 L228 86 Q256 58 284 86 Z M256 150 Q256 256 362 256 Q256 256 256 362 Q256 256 150 256 Q256 256 256 150 Z"/>
+  </g>
+  <text x="216" y="146" font-family="'Space Grotesk', system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" letter-spacing="8" fill="#f2f2ee">AGENT ATLAS</text>
+</svg>

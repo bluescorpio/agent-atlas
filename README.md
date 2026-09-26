@@ -206,8 +206,12 @@ Next.js 15 (App Router) · TypeScript · `viem` + `wagmi` · TanStack Query · B
 - **Event:** BNB Chain — Build the Era (5 Aug – 9 Sep 2026)
 - **Tracks:** Main Track · TermiX Challenge
 - **Team:** `bluescorpio`
+- **X:** [x.com/wang_xiaolou](https://x.com/wang_xiaolou)
+- **Telegram:** [@wang_xiaolou](https://t.me/wang_xiaolou)
+- **Team wallet:** `0xDdd54D4D71FF9AD625D8e90DC6DdEafEeB5632Ba` (not a seller / hire buyer key)
+- **Brand kit:** [`public/brand/`](./public/brand/) · brief [`docs/brand/`](./docs/brand/)
 
-X, Telegram, team wallet, and brand-kit files are not invented here.
+Paste-ready tracking table: [`docs/tracking.md`](./docs/tracking.md).
 
 ## License
 
