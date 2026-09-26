@@ -210,8 +210,9 @@ Next.js 15 (App Router) · TypeScript · `viem` + `wagmi` · TanStack Query · B
 - **Telegram:** [@wang_xiaolou](https://t.me/wang_xiaolou)
 - **Team wallet:** `0xDdd54D4D71FF9AD625D8e90DC6DdEafEeB5632Ba` (not a seller / hire buyer key)
 - **Brand kit:** [`public/brand/`](./public/brand/) · brief [`docs/brand/`](./docs/brand/)
+- **One-line:** Find, compare and hire ERC-8004 DeFi agents on BNB Smart Chain.
 
-Paste-ready tracking table: [`docs/tracking.md`](./docs/tracking.md).
+Paste-ready Set and Earn packet: [`docs/tracking.md`](./docs/tracking.md).
 
 ## License
 
