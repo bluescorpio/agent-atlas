@@ -20,7 +20,7 @@ const AGENTS = {
       'https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Fhfguardvenus-sG614z4iLZ/invocations?qualifier=DEFAULT',
     clientId: 'chtopvung16glktss3assicu5',
     seller: '0xaaBd845B763761af98eE516a2a08829AEf548Cf3',
-    sessionId: 'hf-guard-venus-atlas-buyer-session-01xxxx',
+    sessionId: 'hf-guard-venus-atlas-buyer-session-2026-09-27',
     task:
       'Read Venus Comptroller.getAccountLiquidity for 0x1111111111111111111111111111111111111111 plus vToken.balanceOf, borrowBalanceStored, and supplyRatePerBlock. Return JSON {address, comptroller, accountLiquidity, vtokenPositions, healthAssessment, recommendedActions}. Never invent numbers.',
     terms: {
@@ -30,12 +30,27 @@ const AGENTS = {
         'read-only contract views only; do not repay or add collateral; do not invent numbers; no_position is valid',
     },
   },
+  'rebalancing-pcs-v3': {
+    invoke:
+      'https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Frebalancingpcsv3-P5Q200A9kZ/invocations?qualifier=DEFAULT',
+    clientId: '67vlfr0f7piov7em6p47hr1u7f',
+    seller: '0x48566287e8afDE4Eb7550f44f778E4C1a3B2EC32',
+    sessionId: 'rebalancing-pcs-v3-atlas-buyer-session-2026-09-27',
+    task:
+      'Read PancakeSwap V3 pool.slot0, liquidity, token0, and token1. Return JSON {pool, currentPrice, tick, range, inRange, recommendedAction, reasoning}. Never invent numbers.',
+    terms: {
+      deliverables:
+        'JSON snapshot of slot0/liquidity/token0/token1 and a hold|rebalance recommendation cited from those views',
+      quality_standards:
+        'read-only contract views only; do not mint, burn, collect, or move LP; do not invent numbers',
+    },
+  },
   'yield-stable-router': {
     invoke:
       'https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Fyieldstablerouter-FscO4qDKDv/invocations?qualifier=DEFAULT',
     clientId: '5ahoiupde17urbcab90a8ekkvs',
     seller: '0xec2edaf39738Fd92B095dD1c8d10B39074f1B0bE',
-    sessionId: 'yield-stable-router-atlas-buyer-session-01',
+    sessionId: 'yield-stable-router-atlas-buyer-session-2026-09-27',
     task:
       'Read Venus vToken.supplyRatePerBlock and borrowRatePerBlock plus ERC-20 symbol/decimals. Lista APR is only from these job terms (no Lista contract view): listaSupplyAprPercent=1.528. Return JSON {asset, venus, lista, recommendation, reasoning}. Never invent numbers.',
     terms: {
@@ -229,7 +244,7 @@ async function fundOnChain(
 async function main() {
   const agentId = argValue('--agent') as AgentId | undefined;
   if (!agentId || !(agentId in AGENTS)) {
-    throw new Error('Usage: npx tsx scripts/erc8183-hire.ts --agent hf-guard-venus|yield-stable-router --fund');
+    throw new Error('Usage: npx tsx scripts/erc8183-hire.ts --agent hf-guard-venus|yield-stable-router|rebalancing-pcs-v3 --fund');
   }
   const agent = AGENTS[agentId];
   const root = process.cwd();
@@ -239,6 +254,17 @@ async function main() {
     'AGENTCORE_CLIENT_ID',
     'AGENTCORE_CLIENT_SECRET',
   ]);
+  const namedSecret = {
+    'hf-guard-venus': 'HF_A2A_CLIENT_SECRET',
+    'yield-stable-router': 'YIELD_A2A_CLIENT_SECRET',
+    'rebalancing-pcs-v3': 'REBALANCING_A2A_CLIENT_SECRET',
+  }[agentId];
+  if (namedSecret) {
+    loadDotEnv(resolve(root, '.env.local'), false, [namedSecret]);
+    if (!process.env.AGENTCORE_CLIENT_SECRET && process.env[namedSecret]) {
+      process.env.AGENTCORE_CLIENT_SECRET = process.env[namedSecret];
+    }
+  }
 
   const clientId = process.env.AGENTCORE_CLIENT_ID || agent.clientId;
   const clientSecret = process.env.AGENTCORE_CLIENT_SECRET;

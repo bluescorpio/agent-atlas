@@ -31,7 +31,7 @@ platform_artifact = "zip"
 packaging = "zip"
 iam_notice_accepted_at = "2026-09-07T05:30:27Z"
 iam_notice_version = 1
-last_deploy_at = "2026-09-07T05:55:43Z"
+last_deploy_at = "2026-09-27T01:35:43Z"
 provider = "aws"
 runtime_arn = "arn:aws:bedrock-agentcore:us-east-1:850122838544:runtime/hfguardvenus-sG614z4iLZ"
 invoke_url = "https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A850122838544%3Aruntime%2Fhfguardvenus-sG614z4iLZ/invocations?qualifier=DEFAULT"
@@ -51,7 +51,7 @@ platform_exposed_addresses = ["0x3573e861363880f18F357Ca8258FA1393573d676"]
 
 [llm]
 provider = "pieverse-llm"
-model = "auto/free"
+model = "auto/paid"
 
 [llm.pieverse]
 # Pieverse topup runs ONLY on BSC mainnet (chainId=56); decoupled from [network].default.
